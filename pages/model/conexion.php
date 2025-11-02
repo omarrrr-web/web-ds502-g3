@@ -1,7 +1,7 @@
 <?php
 class Conexion {
     private $server = "localhost";
-    private $db = "bd_ventas_ds502";
+    private $db = "bd_GATI_ds502";
     private $user = "root";
     private $psw = "";
 

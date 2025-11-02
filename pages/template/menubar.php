@@ -21,6 +21,9 @@
         <li class="nav-item">
           <a class="nav-link" href="<?=$route?>/proveedor"><i class="fas fa-truck text-danger me-2"></i>Proveedor</a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" href="<?=$route?>/empleado"><i class="fas fa-users text-info me-2"></i>Empleados</a>
+        </li>
       </ul>
     </div>
   </div>
