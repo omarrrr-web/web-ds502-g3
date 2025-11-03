@@ -1,4 +1,4 @@
 <?php
-header("Location: ../listar_licencias.php");
-exit();
+    header("Location: ../pages/view/licencias/listar_licencias.php");
+    exit();
 ?>
