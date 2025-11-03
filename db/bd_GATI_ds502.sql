@@ -174,25 +174,16 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE PROCEDURE sp_registrar_empleado(
-    IN p_nombre VARCHAR(100),
-    IN p_apellido VARCHAR(100),
-    IN p_email VARCHAR(255),
-    IN p_password VARCHAR(255),
-    IN p_id_rol INT
+CREATE PROCEDURE sp_registrar_rol(
+    IN p_nombre_rol VARCHAR(100)
 )
 BEGIN
-    DECLARE last_id_empleado INT;
-
-    INSERT INTO empleados(nombre, apellido, email, password, activo)
-    VALUES(p_nombre, p_apellido, p_email, p_password, 1);
-
-    SET last_id_empleado = LAST_INSERT_ID();
-
-    INSERT INTO empleado_rol(id_empleado, id_rol)
-    VALUES(last_id_empleado, p_id_rol);
+    INSERT INTO roles(nombre_rol)
+    VALUES(p_nombre_rol);
 END$$
 DELIMITER ;
+
+
 
 DELIMITER $$
 CREATE PROCEDURE sp_editar_empleado(
@@ -254,7 +245,7 @@ BEGIN
 END$$
 DELIMITER ;
 
--- 9. Filtrar Empleados
+
 DELIMITER $$
 CREATE PROCEDURE sp_filtrar_empleados(
     IN p_termino VARCHAR(255)
@@ -279,3 +270,38 @@ BEGIN
 END$$
 DELIMITER ;
 
+USE bd_GATI_ds502;
+
+DELIMITER $$
+CREATE PROCEDURE sp_buscar_rol_por_id(IN p_id_rol INT)
+BEGIN
+    SELECT id_rol, nombre_rol FROM roles WHERE id_rol = p_id_rol;
+END$$
+DELIMITER ;
+
+
+
+DELIMITER $$
+CREATE PROCEDURE sp_editar_rol(IN p_id_rol INT, IN p_nombre_rol VARCHAR(50))
+BEGIN
+    UPDATE roles SET nombre_rol = p_nombre_rol WHERE id_rol = p_id_rol;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE sp_eliminar_rol(IN p_id_rol INT)
+BEGIN
+    DELETE FROM roles WHERE id_rol = p_id_rol;
+END$$
+DELIMITER ;
+
+USE bd_GATI_ds502;
+DELIMITER $$
+CREATE PROCEDURE sp_filtrar_roles(IN p_termino VARCHAR(50))
+BEGIN
+    SELECT id_rol, nombre_rol
+    FROM roles
+    WHERE nombre_rol LIKE CONCAT('%', p_termino, '%')
+    ORDER BY nombre_rol ASC;
+END$$
+DELIMITER ;

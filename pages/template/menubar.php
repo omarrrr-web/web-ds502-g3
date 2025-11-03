@@ -10,19 +10,10 @@
           <a class="nav-link active" aria-current="page" href="https://www.senati.edu.pe"><i class="fas fa-graduation-cap text-light me-2"></i>SENATI</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="<?=$route?>/marca"><i class="fas fa-tags text-success me-2"></i>Marca</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="<?=$route?>/categoria"><i class="fas fa-layer-group text-primary me-2"></i>Categoria</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="<?=$route?>/producto"><i class="fas fa-box-open text-warning me-2"></i>Producto</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="<?=$route?>/proveedor"><i class="fas fa-truck text-danger me-2"></i>Proveedor</a>
-        </li>
-        <li class="nav-item">
           <a class="nav-link" href="<?=$route?>/empleado"><i class="fas fa-users text-info me-2"></i>Empleados</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="<?=$route?>/rol"><i class="fas fa-user-tag text-warning me-2"></i>Roles</a>
         </li>
       </ul>
     </div>
