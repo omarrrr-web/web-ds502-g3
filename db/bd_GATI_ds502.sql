@@ -305,3 +305,102 @@ BEGIN
     ORDER BY nombre_rol ASC;
 END$$
 DELIMITER ;
+
+
+
+
+DELIMITER $$
+CREATE PROCEDURE sp_listar_categorias()
+BEGIN
+    SELECT id_categoria, nombre_categoria
+    FROM categorias_activo
+    ORDER BY nombre_categoria ASC;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE sp_buscar_categoria_por_id(IN p_id_categoria INT)
+BEGIN
+    SELECT id_categoria, nombre_categoria
+    FROM categorias_activo
+    WHERE id_categoria = p_id_categoria;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE sp_filtrar_categorias(IN p_termino VARCHAR(100))
+BEGIN
+    SELECT id_categoria, nombre_categoria
+    FROM categorias_activo
+    WHERE nombre_categoria LIKE CONCAT('%', p_termino, '%')
+    ORDER BY nombre_categoria ASC;
+END$$
+DELIMITER ;
+
+
+DELIMITER $$
+CREATE PROCEDURE sp_listar_activos()
+BEGIN
+    SELECT a.*, c.nombre_categoria
+    FROM activos a
+    JOIN categorias_activo c ON a.id_categoria = c.id_categoria
+    ORDER BY a.id_activo;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE sp_buscar_activo_por_id(IN p_id_activo INT)
+BEGIN
+    SELECT a.*, c.nombre_categoria
+    FROM activos a
+    JOIN categorias_activo c ON a.id_categoria = c.id_categoria
+    WHERE a.id_activo = p_id_activo;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE sp_filtrar_activos(IN p_termino VARCHAR(255))
+BEGIN
+    SELECT a.*, c.nombre_categoria
+    FROM activos a
+    JOIN categorias_activo c ON a.id_categoria = c.id_categoria
+    WHERE a.serial_number LIKE CONCAT('%', p_termino, '%')
+       OR a.marca LIKE CONCAT('%', p_termino, '%')
+       OR a.modelo LIKE CONCAT('%', p_termino, '%')
+    ORDER BY a.id_activo;
+END$$
+DELIMITER ;
+
+
+DELIMITER $$
+CREATE PROCEDURE sp_listar_licencias()
+BEGIN
+    SELECT l.*, c.nombre_categoria
+    FROM licencias_software l
+    JOIN categorias_activo c ON l.id_categoria = c.id_categoria
+    ORDER BY l.id_licencia;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE sp_buscar_licencia_por_id(IN p_id_licencia INT)
+BEGIN
+    SELECT l.*, c.nombre_categoria
+    FROM licencias_software l
+    JOIN categorias_activo c ON l.id_categoria = c.id_categoria
+    WHERE l.id_licencia = p_id_licencia;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE sp_filtrar_licencias(IN p_termino VARCHAR(150))
+BEGIN
+    SELECT l.*, c.nombre_categoria
+    FROM licencias_software l
+    JOIN categorias_activo c ON l.id_categoria = c.id_categoria
+    WHERE l.nombre_software LIKE CONCAT('%', p_termino, '%')
+    ORDER BY l.id_licencia;
+END$$
+DELIMITER ;
+
+
