@@ -25,6 +25,7 @@ class CRUDCategoria extends Conexion {
         return $arr_cat;
     }
     
+    
     // --- R (Read) - Consultar (para AJAX) ---
     public function ConsultarCategoriaPorId($id_categoria) {
         $data = $this->BuscarCategoriaPorId($id_categoria);
