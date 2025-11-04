@@ -210,6 +210,31 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
+CREATE PROCEDURE sp_registrar_empleado(
+    IN p_nombre VARCHAR(100),
+    IN p_apellido VARCHAR(100),
+    IN p_email VARCHAR(255),
+    IN p_password VARCHAR(255),
+    IN p_id_rol INT
+)
+BEGIN
+    DECLARE nuevo_empleado_id INT;
+
+    START TRANSACTION;
+
+    INSERT INTO empleados(nombre, apellido, email, password)
+    VALUES(p_nombre, p_apellido, p_email, p_password);
+
+    SET nuevo_empleado_id = LAST_INSERT_ID();
+
+    INSERT INTO empleado_rol(id_empleado, id_rol)
+    VALUES(nuevo_empleado_id, p_id_rol);
+
+    COMMIT;
+END$$
+DELIMITER ;
+
+DELIMITER $$
 CREATE PROCEDURE sp_desactivar_empleado(IN p_id_empleado INT)
 BEGIN
     UPDATE empleados

@@ -15,6 +15,15 @@
         <li class="nav-item">
           <a class="nav-link" href="<?=$route?>/rol"><i class="fas fa-user-tag text-warning me-2"></i>Roles</a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" href="<?=$route?>/categoria"><i class="fas fa-tags text-success me-2"></i>Categorías</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="<?=$route?>/activos"><i class="fas fa-box text-primary me-2"></i>Activos</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="<?=$route?>/licencias"><i class="fas fa-id-badge text-danger me-2"></i>Licencias</a>
+        </li>
       </ul>
     </div>
   </div>
