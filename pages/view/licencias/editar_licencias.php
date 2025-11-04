@@ -1,7 +1,6 @@
-// pages/view/licencias/editar_licencia.php
 <?php
 // Define la ruta DE DOS NIVELES
-$route = "../.."; 
+$route = "../../.."; 
 include("../../template/loadclass.php");
 
 // 1. Lógica PHP para precarga y manejo de listas
@@ -11,7 +10,7 @@ $rs_categorias = $crudcategoria->ListarCategoria(); // Obtiene todas las categor
 
 // 2. Capturar el ID y buscar la licencia actual
 if (!isset($_GET['idlic'])) {
-    header("location: listar_licencia.php");
+    header("location: listar_licencias.php");
     exit();
 }
 
@@ -34,7 +33,7 @@ include("../../template/menubar.php");
     </header>
     
     <nav class="mb-3">
-        <a href="listar_licencia.php" class="btn btn-outline-secondary btn-sm">
+        <a href="listar_licencias.php" class="btn btn-outline-secondary btn-sm">
             <i class="fas fa-arrow-circle-left"></i> Regresar
         </a>
     </nav>

@@ -2,7 +2,7 @@
 <html lang="es">
     <?php
         $route = ".";
-        $title = "Aplicación Web - DS502 - G3"; 
+        $title = "Aplicación Web - DS502 - G3";
 
         include("pages/template/header.php");
     ?>

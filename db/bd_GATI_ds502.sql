@@ -337,6 +337,46 @@ BEGIN
 END$$
 DELIMITER ;
 
+DELIMITER $$
+CREATE PROCEDURE sp_editar_categoria(IN p_id_categoria INT, IN p_nombre_categoria VARCHAR(100))
+BEGIN
+    UPDATE categorias_activo SET nombre_categoria = p_nombre_categoria WHERE id_categoria = p_id_categoria;
+END$$
+DELIMITER ;
+
+DELIMITER //
+CREATE PROCEDURE sp_registrar_categoria(IN p_nombre VARCHAR(100))
+BEGIN
+    INSERT INTO categorias_activo(nombre_categoria)
+    VALUES(p_nombre);
+END //
+DELIMITER ;
+
+call sp_registrar_categoria('Mouse');
+
+DELIMITER $$
+CREATE PROCEDURE sp_editar_categorias_activo(
+    IN p_id_categoria INT,
+    IN p_nombre_categoria VARCHAR(100)
+)
+BEGIN
+    UPDATE categorias_activo
+    SET nombre_categoria = p_nombre_categoria
+    WHERE id_categoria = p_id_categoria;
+END $$
+
+DELIMITER ;
+
+call sp_editar_categorias_activo(4,'Celular')
+
+DELIMITER //
+CREATE PROCEDURE sp_borrar_categoria(IN p_id INT)
+BEGIN
+    DELETE FROM categorias_activo
+    WHERE id_categoria = p_id;
+END //
+DELIMITER ;
+
 
 DELIMITER $$
 CREATE PROCEDURE sp_listar_activos()
@@ -368,6 +408,76 @@ BEGIN
        OR a.marca LIKE CONCAT('%', p_termino, '%')
        OR a.modelo LIKE CONCAT('%', p_termino, '%')
     ORDER BY a.id_activo;
+END$$
+DELIMITER ;
+
+DELIMITER //
+CREATE PROCEDURE sp_registrar_activo(
+    IN p_id_categoria INT,
+    IN p_serial_number VARCHAR(255),
+    IN p_marca VARCHAR(100),
+    IN p_modelo VARCHAR(100),
+    IN p_fecha_compra DATE,
+    IN p_precio DECIMAL(10, 2),
+    IN p_estado ENUM('En uso', 'Almacenado', 'Mantenimiento', 'Baja')
+)
+BEGIN
+    INSERT INTO activos (
+        id_categoria,
+        serial_number,
+        marca,
+        modelo,
+        fecha_compra,
+        precio,
+        estado
+    )
+    VALUES (
+        p_id_categoria,
+        p_serial_number,
+        p_marca,
+        p_modelo,
+        p_fecha_compra,
+        p_precio,
+        p_estado
+    );
+END //
+DELIMITER ;
+
+CALL sp_registrar_activo(1, 'SN_TEST_999', 'HP', 'Spectre X', '2025-01-01', 1500.00, 'Almacenado');
+
+DELIMITER //
+CREATE PROCEDURE sp_borrar_activo(IN p_id INT)
+BEGIN
+    DELETE FROM activos
+    WHERE id_activo = p_id;
+END //
+DELIMITER ;
+
+CALL sp_borrar_activo(10);
+
+DELIMITER $$
+CREATE PROCEDURE sp_editar_activo(
+    IN p_id_activo INT,
+    IN p_id_categoria INT,
+    IN p_serial_number VARCHAR(255),
+    IN p_marca VARCHAR(100),
+    IN p_modelo VARCHAR(100),
+    IN p_fecha_compra DATE,
+    IN p_precio DECIMAL(10, 2),
+    IN p_estado ENUM('En uso', 'Almacenado', 'Mantenimiento', 'Baja')
+)
+BEGIN
+    UPDATE activos
+    SET 
+        id_categoria = p_id_categoria,
+        serial_number = p_serial_number,
+        marca = p_marca,
+        modelo = p_modelo,
+        fecha_compra = p_fecha_compra,
+        precio = p_precio,
+        estado = p_estado
+    WHERE 
+        id_activo = p_id_activo;
 END$$
 DELIMITER ;
 
@@ -403,3 +513,52 @@ BEGIN
 END$$
 DELIMITER ;
 
+call sp_listar_licencias;
+
+DELIMITER //
+CREATE PROCEDURE sp_registrar_licencia(
+    IN p_id_categoria INT,
+    IN p_nombre_software VARCHAR(150),
+    IN p_clave_licencia VARCHAR(255),
+    IN p_fecha_expiracion DATE,
+    IN p_cantidad_usuarios INT
+)
+BEGIN
+    INSERT INTO licencias_software (
+        id_categoria,
+        nombre_software,
+        clave_licencia,
+        fecha_expiracion,
+        cantidad_usuarios
+    )
+    VALUES (
+        p_id_categoria,
+        p_nombre_software,
+        p_clave_licencia,
+        p_fecha_expiracion,
+        p_cantidad_usuarios
+    );
+END //
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE sp_editar_licencia(
+    IN p_id_licencia INT,
+    IN p_id_categoria INT,
+    IN p_nombre_software VARCHAR(150),
+    IN p_clave_licencia VARCHAR(255),
+    IN p_fecha_expiracion DATE,
+    IN p_cantidad_usuarios INT
+)
+BEGIN
+    UPDATE licencias_software
+    SET 
+        id_categoria = p_id_categoria,
+        nombre_software = p_nombre_software,
+        clave_licencia = p_clave_licencia,
+        fecha_expiracion = p_fecha_expiracion,
+        cantidad_usuarios = p_cantidad_usuarios
+    WHERE 
+        id_licencia = p_id_licencia;
+END$$
+DELIMITER ;

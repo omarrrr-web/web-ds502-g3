@@ -1,4 +1,4 @@
-<footer class="pt-5">
+<footer>
 <div class="card">
   <div class="card-header">
     &copy; SENATI - DESARROLLO DE SOFTWARE
@@ -15,21 +15,4 @@
     </figure>
   </div>
 </div>
-
-<!-- Modal Genérico -->
-<div class="modal fade" id="modalGenerico" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header" id="modalGenericoHeader">
-                <h1 class="modal-title fs-5" id="modalGenericoTitle"></h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body" id="modalGenericoBody">
-            </div>
-            <div class="modal-footer" id="modalGenericoFooter">
-            </div>
-        </div>
-    </div>
-</div>
-
 </footer>

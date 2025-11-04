@@ -58,12 +58,12 @@ include("../../template/menubar.php");
                                 <td><?= $lic->nombre_categoria ?></td>
                                 
                                 <td>
-                                    <a href="mostrar_licencia.php?idlic=<?= $lic->id_licencia ?>" class="btn btn-outline-info btn-sm" title="Mostrar">
+                                    <a href="mostrar_licencias.php?idlic=<?= $lic->id_licencia ?>" class="btn btn-outline-info btn-sm" title="Mostrar">
                                         <i class="fas fa-eye"></i>
                                     </a>
                                 </td>
                                 <td>
-                                    <a href="editar_licencia.php?idlic=<?= $lic->id_licencia ?>" class="btn_editar btn btn-outline-success btn-sm" title="Editar">
+                                    <a href="editar_licencias.php?idlic=<?= $lic->id_licencia ?>" class="btn_editar btn btn-outline-success btn-sm" title="Editar">
                                         <i class="fas fa-pen-square"></i>
                                     </a>
                                 </td>

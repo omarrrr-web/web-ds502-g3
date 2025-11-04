@@ -82,10 +82,25 @@ class CRUDActivos extends Conexion {
     // --- D (Delete) - Borrar ---
     public function BorrarActivo($id_activo) {
         $cn = $this->Conectar();
-        $sql = "call sp_borrar_activo(:id)"; // SP de Borrar Activo
-        $snt = $cn->prepare($sql);
-        $snt->bindParam(":id", $id_activo);
-        $snt->execute();
+    
+        // Primero, eliminar las asignaciones asociadas al activo
+        $sql_delete_asignaciones = "DELETE FROM asignaciones WHERE id_activo = :id";
+        $snt_delete_asignaciones = $cn->prepare($sql_delete_asignaciones);
+        $snt_delete_asignaciones->bindParam(":id", $id_activo);
+        $snt_delete_asignaciones->execute();
+
+        // Segundo, eliminar los registros de mantenimiento asociados al activo
+        $sql_delete_mantenimiento = "DELETE FROM registros_mantenimiento WHERE id_activo = :id";
+        $snt_delete_mantenimiento = $cn->prepare($sql_delete_mantenimiento);
+        $snt_delete_mantenimiento->bindParam(":id", $id_activo);
+        $snt_delete_mantenimiento->execute();
+    
+        // Luego, proceder a borrar el activo
+        $sql_borrar_activo = "call sp_borrar_activo(:id)"; // SP de Borrar Activo
+        $snt_borrar_activo = $cn->prepare($sql_borrar_activo);
+        $snt_borrar_activo->bindParam(":id", $id_activo);
+        $snt_borrar_activo->execute();
+    
         $cn = null;
     }
 
