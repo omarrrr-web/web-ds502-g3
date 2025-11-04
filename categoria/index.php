@@ -1,2 +1,4 @@
 <?php
-    header("location: ../pages/view/categoria/listar.php");
+    header("Location: ../pages/view/categoria/listar_categoria.php");
+    exit();
+?>

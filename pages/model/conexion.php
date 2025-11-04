@@ -1,25 +1,29 @@
 <?php
 class Conexion {
-    private $server = "localhost";
-    private $db = "bd_GATI_ds502";
-    private $user = "root";
-    private $psw = "";
+
+    // Configuración de la nueva base de datos GATI
+    private $user = "root"; 
+    private $password = ""; 
+    private $server = "localhost"; 
+    private $bd = "bd_GATI_ds502"; 
+    private $cn = null;
 
     public function Conectar() {
         try {
-            $conexion = new PDO("mysql:host=$this->server;dbname=$this->db", $this->user, $this->psw);
-            $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-            return $conexion;
-
-            //echo "BD conectada";
-        } catch (PDOException $ex) {
-            echo "Existen errores: " . $ex->getMessage();
+            // Cadena de conexión DSN
+            $dsn = "mysql:host={$this->server};dbname={$this->bd};charset=utf8mb4";
+            
+            $this->cn = new PDO($dsn, $this->user, $this->password);
+            
+            // Configuración de atributos PDO
+            $this->cn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $this->cn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
+            
+            return $this->cn;
+        } catch (PDOException $e) {
+            echo "Error de Conexión: " . $e->getMessage();
             return null;
         }
     }
 }
-// Instancia a la conexión
-// $cnx = new Conexion();
-// $cnx->Conectar();
 ?>

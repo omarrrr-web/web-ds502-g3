@@ -1,41 +1,25 @@
-create database bd_GATI_ds502;
+CREATE DATABASE IF NOT EXISTS bd_GATI_ds502;
+USE bd_GATI_ds502;
 
-use bd_GATI_ds502;
--- -----------------------------------------------------
--- Esquema de Base de Datos para GATI
--- Empresa: Consultoría Ágil S.A.
--- -----------------------------------------------------
-
--- Deshabilitar la verificación de claves foráneas temporalmente
-SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
-
--- -----------------------------------------------------
--- I. TABLAS DE GESTIÓN DE USUARIOS Y ROLES
--- -----------------------------------------------------
-
--- 1. Tabla: roles
--- Define los permisos (Admin vs Empleado)
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `roles` (
   `id_rol` INT AUTO_INCREMENT PRIMARY KEY,
   `nombre_rol` VARCHAR(50) NOT NULL UNIQUE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- 2. Tabla: empleados
--- Usuarios del sistema (tanto admins como normales)
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `empleados` (
   `id_empleado` INT AUTO_INCREMENT PRIMARY KEY,
   `nombre` VARCHAR(100) NOT NULL,
   `apellido` VARCHAR(100) NOT NULL,
-  `email` VARCHAR(255) NOT NULL UNIQUE COMMENT 'Usado para el login',
-  `password` VARCHAR(255) NOT NULL COMMENT 'Almacenar siempre hasheado (ej. bcrypt)',
-  `activo` TINYINT(1) DEFAULT 1 COMMENT '0 = Inactivo, 1 = Activo'
+  `email` VARCHAR(255) NOT NULL UNIQUE,
+  `password` VARCHAR(255) NOT NULL,
+  `activo` TINYINT(1) DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- 3. Tabla: empleado_rol (Relación Muchos a Muchos)
--- Asigna los roles a los empleados
--- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `categorias_activo` (
+  `id_categoria` INT AUTO_INCREMENT PRIMARY KEY,
+  `nombre_categoria` VARCHAR(100) NOT NULL UNIQUE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE IF NOT EXISTS `empleado_rol` (
   `id_empleado` INT NOT NULL,
   `id_rol` INT NOT NULL,
@@ -44,22 +28,6 @@ CREATE TABLE IF NOT EXISTS `empleado_rol` (
   FOREIGN KEY (`id_rol`) REFERENCES `roles` (`id_rol`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-
--- -----------------------------------------------------
--- II. TABLAS DE GESTIÓN DE ACTIVOS (CORE CRUD)
--- -----------------------------------------------------
-
--- 4. Tabla: categorias_activo
--- Clasifica el tipo de activo (Hardware, Software, etc.)
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `categorias_activo` (
-  `id_categoria` INT AUTO_INCREMENT PRIMARY KEY,
-  `nombre_categoria` VARCHAR(100) NOT NULL UNIQUE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- 5. Tabla: activos
--- El inventario principal de hardware
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `activos` (
   `id_activo` INT AUTO_INCREMENT PRIMARY KEY,
   `id_categoria` INT NOT NULL,
@@ -72,12 +40,9 @@ CREATE TABLE IF NOT EXISTS `activos` (
   FOREIGN KEY (`id_categoria`) REFERENCES `categorias_activo` (`id_categoria`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- 6. Tabla: licencias_software
--- Inventario de software (activos no físicos)
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `licencias_software` (
   `id_licencia` INT AUTO_INCREMENT PRIMARY KEY,
-  `id_categoria` INT NOT NULL COMMENT 'FK a categoria "Software"',
+  `id_categoria` INT NOT NULL,
   `nombre_software` VARCHAR(150) NOT NULL,
   `clave_licencia` VARCHAR(255) NOT NULL,
   `fecha_expiracion` DATE NULL,
@@ -85,60 +50,33 @@ CREATE TABLE IF NOT EXISTS `licencias_software` (
   FOREIGN KEY (`id_categoria`) REFERENCES `categorias_activo` (`id_categoria`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-
--- -----------------------------------------------------
--- III. TABLAS DE RELACIÓN Y MOVIMIENTO
--- -----------------------------------------------------
-
--- 7. Tabla: asignaciones
--- Registra qué empleado tiene qué activo
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `asignaciones` (
   `id_asignacion` INT AUTO_INCREMENT PRIMARY KEY,
   `id_activo` INT NOT NULL,
   `id_empleado` INT NOT NULL,
   `fecha_asignacion` DATETIME DEFAULT CURRENT_TIMESTAMP,
-  `fecha_devolucion` DATETIME NULL COMMENT 'Cuando es NULO, el activo sigue asignado',
+  `fecha_devolucion` DATETIME NULL,
   `notas` TEXT NULL,
   FOREIGN KEY (`id_activo`) REFERENCES `activos` (`id_activo`),
   FOREIGN KEY (`id_empleado`) REFERENCES `empleados` (`id_empleado`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- 8. Tabla: registros_mantenimiento
--- Historial de servicio de cada activo
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `registros_mantenimiento` (
   `id_mantenimiento` INT AUTO_INCREMENT PRIMARY KEY,
   `id_activo` INT NOT NULL,
   `fecha_servicio` DATE NOT NULL,
   `descripcion` TEXT NOT NULL,
   `costo` DECIMAL(10, 2) DEFAULT 0.00,
-  `realizado_por` INT NOT NULL COMMENT 'FK al empleado (Técnico de T.I.) que hizo el servicio',
+  `realizado_por` INT NOT NULL,
   FOREIGN KEY (`id_activo`) REFERENCES `activos` (`id_activo`),
   FOREIGN KEY (`realizado_por`) REFERENCES `empleados` (`id_empleado`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- -----------------------------------------------------
--- INSERTS INICIALES (Datos Semilla)
--- -----------------------------------------------------
-INSERT INTO `roles` (`nombre_rol`) VALUES ('Administrador'), ('Empleado');
-INSERT INTO `categorias_activo` (`nombre_categoria`) VALUES ('Laptop'), ('Monitor'), ('Software'), ('Móvil');
--- -----------------------------------------------------
--- INSERCIÓN DE DATOS SEMILLA PARA GATI
--- -----------------------------------------------------
-
--- Deshabilitar la verificación de claves foráneas para la inserción masiva
-SET FOREIGN_KEY_CHECKS=0;
-
--- 1. Tabla: roles
--- (Insertamos 3 roles clave)
 INSERT INTO `roles` (`id_rol`, `nombre_rol`) VALUES
 (1, 'Administrador'),
 (2, 'Empleado'),
 (3, 'Tecnico_TI');
 
--- 2. Tabla: categorias_activo
--- (Insertamos 5 categorías de ejemplo)
 INSERT INTO `categorias_activo` (`id_categoria`, `nombre_categoria`) VALUES
 (1, 'Laptop'),
 (2, 'Monitor'),
@@ -146,9 +84,6 @@ INSERT INTO `categorias_activo` (`id_categoria`, `nombre_categoria`) VALUES
 (4, 'Móvil'),
 (5, 'Periférico');
 
--- 3. Tabla: empleados
--- (Insertamos 5 empleados. Las IDs auto-incrementales serán 1, 2, 3, 4, 5)
--- (Las contraseñas deben ser hasheadas en una aplicación real)
 INSERT INTO `empleados` (`id_empleado`, `nombre`, `apellido`, `email`, `password`, `activo`) VALUES
 (1, 'Ana', 'Torres', 'ana.torres@consultoria.com', 'hash_pass_123', 1),
 (2, 'Carlos', 'Luna', 'carlos.luna@consultoria.com', 'hash_pass_456', 1),
@@ -156,18 +91,14 @@ INSERT INTO `empleados` (`id_empleado`, `nombre`, `apellido`, `email`, `password
 (4, 'David', 'Salas', 'david.salas@consultoria.com', 'hash_pass_101', 1),
 (5, 'Elena', 'Vera', 'elena.vera@consultoria.com', 'hash_pass_112', 0);
 
--- 4. Tabla: empleado_rol (Relación)
--- (Asignamos roles a los empleados creados)
 INSERT INTO `empleado_rol` (`id_empleado`, `id_rol`) VALUES
-(1, 1), -- Ana es Administradora
-(2, 3), -- Carlos es Tecnico_TI
-(2, 2), -- Carlos también es Empleado
-(3, 2), -- Beatriz es Empleada
-(4, 2), -- David es Empleado
-(5, 2); -- Elena es Empleada (aunque inactiva)
+(1, 1),
+(2, 3),
+(2, 2),
+(3, 2),
+(4, 2),
+(5, 2);
 
--- 5. Tabla: activos
--- (Insertamos 6 activos de hardware. IDs auto-incrementales 1-6)
 INSERT INTO `activos` (`id_activo`, `id_categoria`, `serial_number`, `marca`, `modelo`, `fecha_compra`, `precio`, `estado`) VALUES
 (1, 1, 'SN_DELL_001', 'Dell', 'XPS 15', '2024-01-10', 1800.00, 'En uso'),
 (2, 1, 'SN_LEN_002', 'Lenovo', 'ThinkPad X1', '2024-02-15', 1650.00, 'Almacenado'),
@@ -176,8 +107,6 @@ INSERT INTO `activos` (`id_activo`, `id_categoria`, `serial_number`, `marca`, `m
 (5, 5, 'SN_LOG_005', 'Logitech', 'MX Keys', '2024-03-05', 150.00, 'Almacenado'),
 (6, 2, 'SN_DELL_006', 'Dell', 'Ultrasharp 27', '2023-01-01', 450.00, 'Mantenimiento');
 
--- 6. Tabla: licencias_software
--- (Insertamos 5 licencias, todas en la categoría 3: Software)
 INSERT INTO `licencias_software` (`id_licencia`, `id_categoria`, `nombre_software`, `clave_licencia`, `fecha_expiracion`, `cantidad_usuarios`) VALUES
 (1, 3, 'Microsoft 365 E5', 'M365-XXXX-YYYY-ZZZZ', '2025-12-31', 50),
 (2, 3, 'JetBrains PhpStorm', 'JET-AAAA-BBBB-CCCC', '2025-06-15', 10),
@@ -185,8 +114,6 @@ INSERT INTO `licencias_software` (`id_licencia`, `id_categoria`, `nombre_softwar
 (4, 3, 'Slack Pro (Workspace)', 'SLK-7777-8888-9999', '2025-10-30', 50),
 (5, 3, 'Windows 11 Pro OEM', 'WIN-QWER-TYUI-OPAS', NULL, 1);
 
--- 7. Tabla: asignaciones
--- (Registra quién tiene qué activo)
 INSERT INTO `asignaciones` (`id_asignacion`, `id_activo`, `id_empleado`, `fecha_asignacion`, `fecha_devolucion`, `notas`) VALUES
 (1, 1, 3, '2024-01-20 09:00:00', NULL, 'Laptop asignada a Beatriz Franco.'),
 (2, 3, 3, '2024-01-20 09:01:00', NULL, 'Monitor principal para Beatriz Franco.'),
@@ -194,8 +121,6 @@ INSERT INTO `asignaciones` (`id_asignacion`, `id_activo`, `id_empleado`, `fecha_
 (4, 5, 4, '2024-03-10 15:30:00', NULL, 'Teclado para David Salas.'),
 (5, 4, 5, '2022-05-05 11:00:00', '2024-05-01 17:00:00', 'Móvil asignado a Elena Vera. Devuelto por baja de empleada.');
 
--- 8. Tabla: registros_mantenimiento
--- (Historial de servicio, realizado por el Técnico (Empleado ID 2))
 INSERT INTO `registros_mantenimiento` (`id_mantenimiento`, `id_activo`, `fecha_servicio`, `descripcion`, `costo`, `realizado_por`) VALUES
 (1, 6, '2025-10-30', 'Monitor (SN_DELL_006) no enciende. Se envía a diagnóstico.', 0.00, 2),
 (2, 1, '2024-06-15', 'Limpieza interna de ventiladores y cambio de pasta térmica (SN_DELL_001).', 50.00, 2),
@@ -203,11 +128,377 @@ INSERT INTO `registros_mantenimiento` (`id_mantenimiento`, `id_activo`, `fecha_s
 (4, 4, '2024-04-20', 'Diagnóstico de batería hinchada (SN_APP_004). Se determina como BAJA.', 0.00, 2),
 (5, 6, '2025-10-31', 'Reemplazo de panel LCD dañado (SN_DELL_006).', 150.00, 2);
 
+-- ========================
+--    PROCEDIMIENTOS ROLES
+-- ========================
+DELIMITER $$
 
--- Reactivar la verificación de claves foráneas
-SET FOREIGN_KEY_CHECKS=1;
+CREATE PROCEDURE sp_listar_roles()
+BEGIN
+    SELECT id_rol, nombre_rol FROM roles ORDER BY nombre_rol ASC;
+END $$
 
-select * from categorias_activo;
-select * from registros_mantenimiento;
--- Reactivar la verificación de claves foráneas
-SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+CREATE PROCEDURE sp_buscar_rol_por_id(IN p_id_rol INT)
+BEGIN
+    SELECT id_rol, nombre_rol FROM roles WHERE id_rol = p_id_rol;
+END $$
+
+CREATE PROCEDURE sp_registrar_rol(IN p_nombre_rol VARCHAR(100))
+BEGIN
+    INSERT INTO roles(nombre_rol) VALUES(p_nombre_rol);
+END $$
+
+CREATE PROCEDURE sp_editar_rol(IN p_id_rol INT, IN p_nombre_rol VARCHAR(50))
+BEGIN
+    UPDATE roles SET nombre_rol = p_nombre_rol WHERE id_rol = p_id_rol;
+END $$
+
+CREATE PROCEDURE sp_eliminar_rol(IN p_id_rol INT)
+BEGIN
+    DELETE FROM roles WHERE id_rol = p_id_rol;
+END $$
+
+CREATE PROCEDURE sp_filtrar_roles(IN p_termino VARCHAR(50))
+BEGIN
+    SELECT id_rol, nombre_rol
+    FROM roles
+    WHERE nombre_rol LIKE CONCAT('%', p_termino, '%')
+    ORDER BY nombre_rol ASC;
+END $$
+
+-- ==========================
+--    PROCEDIMIENTOS EMPLEADOS
+-- ==========================
+CREATE PROCEDURE sp_listar_empleados()
+BEGIN
+    SELECT
+        e.id_empleado,
+        e.nombre,
+        e.apellido,
+        e.email,
+        e.activo,
+        GROUP_CONCAT(r.nombre_rol SEPARATOR ', ') AS roles
+    FROM empleados e
+    LEFT JOIN empleado_rol er ON e.id_empleado = er.id_empleado
+    LEFT JOIN roles r ON er.id_rol = r.id_rol
+    WHERE e.activo = 1
+    GROUP BY e.id_empleado
+    ORDER BY e.apellido, e.nombre;
+END $$
+
+CREATE PROCEDURE sp_buscar_empleado_por_id(IN p_id_empleado INT)
+BEGIN
+    SELECT
+        e.id_empleado,
+        e.nombre,
+        e.apellido,
+        e.email,
+        e.password,
+        e.activo,
+        er.id_rol AS id_rol,
+        r.nombre_rol AS nombre_rol
+    FROM empleados e
+    LEFT JOIN empleado_rol er ON e.id_empleado = er.id_empleado
+    LEFT JOIN roles r ON er.id_rol = r.id_rol
+    WHERE e.id_empleado = p_id_empleado;
+END $$
+
+CREATE PROCEDURE sp_registrar_empleado(
+    IN p_nombre VARCHAR(100),
+    IN p_apellido VARCHAR(100),
+    IN p_email VARCHAR(255),
+    IN p_password VARCHAR(255),
+    IN p_id_rol INT
+)
+BEGIN
+    DECLARE nuevo_empleado_id INT;
+    START TRANSACTION;
+    INSERT INTO empleados(nombre, apellido, email, password)
+    VALUES(p_nombre, p_apellido, p_email, p_password);
+    SET nuevo_empleado_id = LAST_INSERT_ID();
+    INSERT INTO empleado_rol(id_empleado, id_rol)
+    VALUES(nuevo_empleado_id, p_id_rol);
+    COMMIT;
+END $$
+
+CREATE PROCEDURE sp_editar_empleado(
+    IN p_id_empleado INT,
+    IN p_nombre VARCHAR(100),
+    IN p_apellido VARCHAR(100),
+    IN p_email VARCHAR(255),
+    IN p_activo TINYINT(1),
+    IN p_id_rol INT
+)
+BEGIN
+    UPDATE empleados
+    SET nombre = p_nombre, apellido = p_apellido, email = p_email
+    WHERE id_empleado = p_id_empleado;
+    DELETE FROM empleado_rol WHERE id_empleado = p_id_empleado;
+    INSERT INTO empleado_rol(id_empleado, id_rol)
+    VALUES(p_id_empleado, p_id_rol);
+END $$
+
+CREATE PROCEDURE sp_desactivar_empleado(IN p_id_empleado INT)
+BEGIN
+    UPDATE empleados SET activo = 0 WHERE id_empleado = p_id_empleado;
+END $$
+
+CREATE PROCEDURE sp_activar_empleado(IN p_id_empleado INT)
+BEGIN
+    UPDATE empleados SET activo = 1 WHERE id_empleado = p_id_empleado;
+END $$
+
+CREATE PROCEDURE sp_listar_empleados_inactivos()
+BEGIN
+    SELECT
+        e.id_empleado,
+        e.nombre,
+        e.apellido,
+        e.email,
+        e.activo,
+        r.nombre_rol AS roles
+    FROM empleados e
+    LEFT JOIN empleado_rol er ON e.id_empleado = er.id_empleado
+    LEFT JOIN roles r ON er.id_rol = r.id_rol
+    WHERE e.activo = 0
+    ORDER BY e.apellido, e.nombre;
+END $$
+
+CREATE PROCEDURE sp_filtrar_empleados(IN p_termino VARCHAR(255))
+BEGIN
+    SELECT
+        e.id_empleado,
+        e.nombre,
+        e.apellido,
+        e.email,
+        e.activo,
+        r.nombre_rol AS roles
+    FROM empleados e
+    LEFT JOIN empleado_rol er ON e.id_empleado = er.id_empleado
+    LEFT JOIN roles r ON er.id_rol = r.id_rol
+    WHERE e.activo = 1 AND (
+        e.nombre LIKE CONCAT(p_termino, '%') OR
+        e.apellido LIKE CONCAT(p_termino, '%') OR
+        e.email LIKE CONCAT(p_termino, '%')
+    )
+    ORDER BY e.apellido, e.nombre;
+END $$
+
+-- ===========================
+--    PROCEDIMIENTOS CATEGORÍA
+-- ===========================
+CREATE PROCEDURE sp_listar_categorias()
+BEGIN
+    SELECT id_categoria, nombre_categoria
+    FROM categorias_activo
+    ORDER BY nombre_categoria ASC;
+END $$
+
+CREATE PROCEDURE sp_buscar_categoria_por_id(IN p_id_categoria INT)
+BEGIN
+    SELECT id_categoria, nombre_categoria
+    FROM categorias_activo
+    WHERE id_categoria = p_id_categoria;
+END $$
+
+CREATE PROCEDURE sp_filtrar_categorias(IN p_termino VARCHAR(100))
+BEGIN
+    SELECT id_categoria, nombre_categoria
+    FROM categorias_activo
+    WHERE nombre_categoria LIKE CONCAT('%', p_termino, '%')
+    ORDER BY nombre_categoria ASC;
+END $$
+
+CREATE PROCEDURE sp_editar_categoria(IN p_id_categoria INT, IN p_nombre_categoria VARCHAR(100))
+BEGIN
+    UPDATE categorias_activo SET nombre_categoria = p_nombre_categoria WHERE id_categoria = p_id_categoria;
+END $$
+
+CREATE PROCEDURE sp_registrar_categoria(IN p_nombre VARCHAR(100))
+BEGIN
+    INSERT INTO categorias_activo(nombre_categoria)
+    VALUES(p_nombre);
+END $$
+
+CREATE PROCEDURE sp_editar_categorias_activo(IN p_id_categoria INT, IN p_nombre_categoria VARCHAR(100))
+BEGIN
+    UPDATE categorias_activo SET nombre_categoria = p_nombre_categoria WHERE id_categoria = p_id_categoria;
+END $$
+
+CREATE PROCEDURE sp_filtrar_categorias_por_nombre(IN nom_categoria VARCHAR(100))
+BEGIN
+    SELECT c.id_categoria, c.nombre_categoria
+    FROM categorias_activo c
+    WHERE c.nombre_categoria LIKE CONCAT('%', nom_categoria, '%');
+END $$
+
+CREATE PROCEDURE sp_borrar_categoria(IN p_id INT)
+BEGIN
+    DELETE FROM categorias_activo WHERE id_categoria = p_id;
+END $$
+
+-- =========================
+--    PROCEDIMIENTOS ACTIVOS
+-- =========================
+CREATE PROCEDURE sp_listar_activos()
+BEGIN
+    SELECT a.*, c.nombre_categoria
+    FROM activos a
+    JOIN categorias_activo c ON a.id_categoria = c.id_categoria
+    ORDER BY a.id_activo;
+END $$
+
+CREATE PROCEDURE sp_buscar_activo_por_id(IN p_id_activo INT)
+BEGIN
+    SELECT a.*, c.nombre_categoria
+    FROM activos a
+    JOIN categorias_activo c ON a.id_categoria = c.id_categoria
+    WHERE a.id_activo = p_id_activo;
+END $$
+
+CREATE PROCEDURE sp_filtrar_activos(IN p_termino VARCHAR(255))
+BEGIN
+    SELECT a.*, c.nombre_categoria
+    FROM activos a
+    JOIN categorias_activo c ON a.id_categoria = c.id_categoria
+    WHERE a.serial_number LIKE CONCAT('%', p_termino, '%')
+       OR a.marca LIKE CONCAT('%', p_termino, '%')
+       OR a.modelo LIKE CONCAT('%', p_termino, '%')
+    ORDER BY a.id_activo;
+END $$
+
+CREATE PROCEDURE sp_registrar_activo(
+    IN p_id_categoria INT,
+    IN p_serial_number VARCHAR(255),
+    IN p_marca VARCHAR(100),
+    IN p_modelo VARCHAR(100),
+    IN p_fecha_compra DATE,
+    IN p_precio DECIMAL(10, 2),
+    IN p_estado ENUM('En uso', 'Almacenado', 'Mantenimiento', 'Baja')
+)
+BEGIN
+    INSERT INTO activos (
+        id_categoria,
+        serial_number,
+        marca,
+        modelo,
+        fecha_compra,
+        precio,
+        estado
+    )
+    VALUES (
+        p_id_categoria,
+        p_serial_number,
+        p_marca,
+        p_modelo,
+        p_fecha_compra,
+        p_precio,
+        p_estado
+    );
+END $$
+
+CREATE PROCEDURE sp_editar_activo(
+    IN p_id_activo INT,
+    IN p_id_categoria INT,
+    IN p_serial_number VARCHAR(255),
+    IN p_marca VARCHAR(100),
+    IN p_modelo VARCHAR(100),
+    IN p_fecha_compra DATE,
+    IN p_precio DECIMAL(10, 2),
+    IN p_estado ENUM('En uso', 'Almacenado', 'Mantenimiento', 'Baja')
+)
+BEGIN
+    UPDATE activos
+    SET 
+        id_categoria = p_id_categoria,
+        serial_number = p_serial_number,
+        marca = p_marca,
+        modelo = p_modelo,
+        fecha_compra = p_fecha_compra,
+        precio = p_precio,
+        estado = p_estado
+    WHERE id_activo = p_id_activo;
+END $$
+
+CREATE PROCEDURE sp_borrar_activo(IN p_id INT)
+BEGIN
+    DELETE FROM activos WHERE id_activo = p_id;
+END $$
+
+-- ==============================
+--    PROCEDIMIENTOS LICENCIAS
+-- ==============================
+CREATE PROCEDURE sp_listar_licencias()
+BEGIN
+    SELECT l.*, c.nombre_categoria
+    FROM licencias_software l
+    JOIN categorias_activo c ON l.id_categoria = c.id_categoria
+    ORDER BY l.id_licencia;
+END $$
+
+CREATE PROCEDURE sp_buscar_licencia_por_id(IN p_id_licencia INT)
+BEGIN
+    SELECT l.*, c.nombre_categoria
+    FROM licencias_software l
+    JOIN categorias_activo c ON l.id_categoria = c.id_categoria
+    WHERE l.id_licencia = p_id_licencia;
+END $$
+
+CREATE PROCEDURE sp_filtrar_licencias(IN p_termino VARCHAR(150))
+BEGIN
+    SELECT l.*, c.nombre_categoria
+    FROM licencias_software l
+    JOIN categorias_activo c ON l.id_categoria = c.id_categoria
+    WHERE l.nombre_software LIKE CONCAT('%', p_termino, '%')
+    ORDER BY l.id_licencia;
+END $$
+
+CREATE PROCEDURE sp_registrar_licencia(
+    IN p_id_categoria INT,
+    IN p_nombre_software VARCHAR(150),
+    IN p_clave_licencia VARCHAR(255),
+    IN p_fecha_expiracion DATE,
+    IN p_cantidad_usuarios INT
+)
+BEGIN
+    INSERT INTO licencias_software (
+        id_categoria,
+        nombre_software,
+        clave_licencia,
+        fecha_expiracion,
+        cantidad_usuarios
+    )
+    VALUES (
+        p_id_categoria,
+        p_nombre_software,
+        p_clave_licencia,
+        p_fecha_expiracion,
+        p_cantidad_usuarios
+    );
+END $$
+
+CREATE PROCEDURE sp_editar_licencia(
+    IN p_id_licencia INT,
+    IN p_id_categoria INT,
+    IN p_nombre_software VARCHAR(150),
+    IN p_clave_licencia VARCHAR(255),
+    IN p_fecha_expiracion DATE,
+    IN p_cantidad_usuarios INT
+)
+BEGIN
+    UPDATE licencias_software
+    SET 
+        id_categoria = p_id_categoria,
+        nombre_software = p_nombre_software,
+        clave_licencia = p_clave_licencia,
+        fecha_expiracion = p_fecha_expiracion,
+        cantidad_usuarios = p_cantidad_usuarios
+    WHERE id_licencia = p_id_licencia;
+END $$
+
+CREATE PROCEDURE sp_borrar_licencia(IN p_id INT)
+BEGIN
+    DELETE FROM licencias_software WHERE id_licencia = p_id;
+END $$
+
+DELIMITER ;

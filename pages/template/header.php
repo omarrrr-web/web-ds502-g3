@@ -9,6 +9,7 @@
 
     <script src = "<?=$route?>/js/jquery.js"></script>
     <script src = "<?=$route?>/js/library.js"></script>
+    <script src = "<?=$route?>/js/codigo.js"></script>
 
     <title><?=$title?></title>
 </head>

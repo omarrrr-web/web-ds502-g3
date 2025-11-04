@@ -1,5 +1,7 @@
-<?php 
-    class Categoria {
-        private $codigo_categoria;
-        private $categoria;
+
+<?php
+class Categoria {
+    public $id_categoria;
+    public $nombre_categoria;
 }
+?>
