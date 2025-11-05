@@ -1,6 +1,6 @@
 <?php
 // Define la ruta DE DOS NIVELES
-$route = "../../.."; 
+$route = "../../..";
 include("../../template/loadclass.php");
 
 // 1. Lógica PHP para precarga y manejo de listas
@@ -33,7 +33,11 @@ include("../../template/menubar.php");
     </header>
     
     <nav class="mb-3">
+<<<<<<< HEAD
         <a href="listar_licencias.php" class="btn btn-outline-secondary btn-sm">
+=======
+        <a href="listar_licencia.php" class="btn btn-outline-secondary btn-sm">
+>>>>>>> 8470d5f326203cb86d6172987a53f9866bb2e416
             <i class="fas fa-arrow-circle-left"></i> Regresar
         </a>
     </nav>

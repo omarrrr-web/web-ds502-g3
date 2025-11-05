@@ -86,7 +86,11 @@ $rs_act = $crudactivo->ListarActivos();
             <div class="modal-body text-center">
                 <h5>¿Seguro de borrar el registro?</h5>
                 <p>
+<<<<<<< HEAD
                     <span class="lbl_nombre_act text-bold"></span>
+=======
+                    <span class="lbl_nombre_act text-bold"></span> 
+>>>>>>> 8470d5f326203cb86d6172987a53f9866bb2e416
                     <span class="lbl_id_act text-muted"></span>
                 </p>
             </div>

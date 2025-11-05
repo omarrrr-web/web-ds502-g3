@@ -3,7 +3,6 @@
     <?php
         $route = ".";
         $title = "Aplicación Web - DS502 - G3";
-
         include("pages/template/header.php");
     ?>
 <body>
