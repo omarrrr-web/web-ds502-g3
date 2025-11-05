@@ -98,7 +98,7 @@ include("../../template/menubar.php");
             </div>
             <div class="modal-footer justify-content-center">
                 <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
-                <a href="#" class="btn_confirmar_borrar btn btn-outline-danger">Borrar</a>
+                <button type="button" class="btn_confirmar_borrar btn btn-outline-danger">Borrar</button>
             </div>
         </div>
     </div>

@@ -5,9 +5,14 @@ $crudcategoria = new CRUDCategoria();
 
 if (isset($_GET["id_cat"])) {
     $id_categoria = $_GET["id_cat"];
-    $crudcategoria->BorrarCategoria($id_categoria);
+    $resultado = $crudcategoria->BorrarCategoria($id_categoria);
     
-    // Redirige al listado
-    header("location: ../view/categoria/listar_categoria.php"); 
+    if ($resultado) {
+        // Redirige con parámetro de éxito
+        header("location: ../view/categoria/listar_categoria.php?delete=exito"); 
+    } else {
+        // Redirige con parámetro de error de clave foránea
+        header("location: ../view/categoria/listar_categoria.php?error=fk"); 
+    }
 }
 ?>

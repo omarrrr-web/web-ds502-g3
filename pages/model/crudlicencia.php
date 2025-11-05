@@ -85,12 +85,21 @@ class CRUDLicencia extends Conexion {
 
     // --- D (Delete) - Borrar ---
     public function BorrarLicencia($id_licencia) {
-        $cn = $this->Conectar();
-        $sql = "call sp_borrar_licencia(:id)"; 
-        $snt = $cn->prepare($sql);
-        $snt->bindParam(":id", $id_licencia);
-        $snt->execute();
-        $cn = null;
+        try {
+            $cn = $this->Conectar();
+            $sql = "call sp_borrar_licencia(:id)"; 
+            $snt = $cn->prepare($sql);
+            $snt->bindParam(":id", $id_licencia);
+            $snt->execute();
+            $cn = null;
+            return true; // Éxito
+        } catch (PDOException $e) {
+            if ($e->getCode() == '23000') {
+                return false; // Error de clave foránea
+            } else {
+                throw $e; // Otro tipo de error
+            }
+        }
     }
 
     // --- R (Read) - Filtrar (para AJAX) ---
@@ -117,7 +126,7 @@ class CRUDLicencia extends Conexion {
                 $html .= '<td>' . $lic->clave_licencia . '</td>';
                 $html .= '<td>' . $lic->cantidad_usuarios . '</td>';
                 $html .= '<td>' . ($lic->fecha_expiracion ?? 'Permanente') . '</td>'; // Muestra "Permanente" si es NULL
-                $html .= '<td>' . $lic->nombre_categoria . '</td>';
+                $html .= '<td>' . ($lic->nombre_categoria ?? 'Sin Categoría') . '</td>';
                 
                 // Botones de acción (deberás crear las vistas correspondientes)
                 $html .= '<td><a href="editar_licencia.php?idlic=' . $lic->id_licencia . '" class="btn_editar btn btn-outline-success btn-sm"><i class="fas fa-pen-square"></i></a></td>';

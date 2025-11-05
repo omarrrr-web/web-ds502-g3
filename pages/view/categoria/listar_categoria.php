@@ -52,7 +52,8 @@ $rs_cat = $crudcategoria->ListarCategoria();
                                     </a>
                                 </td>
                                 <td>
-                                    <a href="editar_categoria.php?idcat=<?= $cat->id_categoria ?>" class="btn_editar btn btn-outline-success btn-sm" title="Editar">
+                                    <a href="#" class="btn_editar btn btn-outline-success btn-sm" title="Editar"
+                                       data-bs-toggle="modal" data-bs-target="#md_editar_cat" data-idcat="<?= $cat->id_categoria ?>">
                                         <i class="fas fa-pen-square"></i>
                                     </a>
                                 </td>
@@ -91,7 +92,7 @@ $rs_cat = $crudcategoria->ListarCategoria();
             </div>
             <div class="modal-footer justify-content-center">
                 <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
-                <a href="#" class="btn_confirmar_borrar btn btn-outline-danger">Borrar</a>
+                <button type="button" class="btn_confirmar_borrar btn btn-outline-danger">Borrar</button>
             </div>
         </div>
     </div>
@@ -111,6 +112,23 @@ $rs_cat = $crudcategoria->ListarCategoria();
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Editar Categoría -->
+<div class="modal fade" id="md_editar_cat" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title"><i class="fas fa-edit"></i> Editar Categoría</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="editar_cat_content">
+                    <!-- El formulario de edición se cargará aquí -->
+                </div>
             </div>
         </div>
     </div>

@@ -10,10 +10,10 @@ class CRUDActivos extends Conexion {
     // --- R (Read) - Listar ---
     public function ListarActivos() {
         $cn = $this->Conectar();
-        $sql = "call sp_listar_activos()"; // SP de Listar Activos
+        $sql = "call sp_listar_activos_activos()"; // MODIFICADO: SP de Listar solo Activos Activos
         $snt = $cn->prepare($sql);
         $snt->execute();
-        $arr_activos = $snt->fetchAll(); // Cambiamos $arr_cat a $arr_activos
+        $arr_activos = $snt->fetchAll(PDO::FETCH_OBJ); // Cambiamos $arr_cat a $arr_activos
         $cn = null;
         return $arr_activos;
     }
@@ -79,20 +79,40 @@ class CRUDActivos extends Conexion {
         $cn = null;
     }
 
-    // --- D (Delete) - Borrar ---
-    public function BorrarActivo($id_activo) {
-        $cn = $this->Conectar();
-        $sql = "call sp_borrar_activo(:id)"; // SP de Borrar Activo
-        $snt = $cn->prepare($sql);
-        $snt->bindParam(":id", $id_activo);
-        $snt->execute();
-        $cn = null;
+
+    public function DesactivarActivo($id_activo){
+            try{
+                $cn = $this->Conectar();
+                $sql = "call sp_baja_activo(:id)";
+                $snt = $cn->prepare($sql);
+                $snt->bindParam(":id", $id_activo, PDO::PARAM_INT);
+                $snt->execute();
+                $cn = null;
+            } catch(PDOException $ex){
+                die($ex->getMessage());
+            }
+        }
+
+    public function ActivarActivo($id_activo){
+        try{
+            $cn = $this->Conectar();
+            $sql = "call sp_alta_activo(:id)";
+            $snt = $cn->prepare($sql);
+            $snt->bindParam(":id", $id_activo, PDO::PARAM_INT);
+            $snt->execute();
+            $cn = null;
+        } catch(PDOException $ex){
+            die($ex->getMessage());
+        }
     }
+
+    // --- D (Delete) - Borrar ---
+    
 
     // --- R (Read) - Filtrar (para AJAX) ---
     public function FiltrarActivos($valor) {
         $cn = $this->Conectar();
-        $sql = "call sp_filtrar_activos(:valor)"; // SP de Filtrar Activos
+        $sql = "call sp_filtrar_activos_activos(:valor)"; // MODIFICADO: Ahora solo filtra activos
         $snt = $cn->prepare($sql);
         $snt->bindParam(":valor", $valor, PDO::PARAM_STR, 100); 
         $snt->execute();
@@ -103,27 +123,69 @@ class CRUDActivos extends Conexion {
         $html = '';
         if (count($arr_activos) > 0) {
             $html .= '<table class="table table-hover table-sm table-warning table-striped">';
-            $html .= '<tr class="table-dark"><th>N°</th><th>ID</th><th>Categoría</th><th>Serial</th><th>Marca</th><th>Modelo</th><th>Estado</th><th colspan="2">Acciones</th></tr>';
+            $html .= '<tr class="table-dark"><th>N°</th><th>ID</th><th>Categoría</th><th>Serial</th><th>Marca</th><th>Modelo</th><th>Estado</th><th colspan="3">Acciones</th></tr>';
             $i = 0;
             foreach ($arr_activos as $act) {
                 $i++;
                 $html .= '<tr class="reg_activo">';
                 $html .= '<td>' . $i . '</td>';
                 $html .= '<td class="codact">' . $act->id_activo . '</td>';
-                $html .= '<td>' . $act->nombre_categoria . '</td>'; // Muestra el nombre de la categoría
+                $html .= '<td>' . ($act->nombre_categoria ?? 'Sin Categoría') . '</td>'; // Muestra el nombre de la categoría o un texto alternativo
                 $html .= '<td class="serialact">' . $act->serial_number . '</td>';
                 $html .= '<td>' . $act->marca . '</td>';
                 $html .= '<td>' . $act->modelo . '</td>';
                 $html .= '<td>' . $act->estado . '</td>';
                 
-                // Botones de acción (deberás crear las vistas correspondientes)
-                $html .= '<td><a href="editar_activo.php?idact=' . $act->id_activo . '" class="btn_editar btn btn-outline-success btn-sm"><i class="fas fa-pen-square"></i></a></td>';
-                $html .= '<td><a href="#" data-bs-toggle="modal" data-bs-target="#md_borrar_act" data-id="' . $act->id_activo . '" data-serial="' . $act->serial_number . '" class="btn_borrar btn btn-outline-danger btn-sm"><i class="fas fa-trash-alt"></i></a></td>';
+                // Botones de acción
+                $html .= '<td><button class="btn btn-outline-info btn-sm btn_mostrar" data-id="' . $act->id_activo . '" title="Mostrar"><i class="fas fa-eye"></i></button></td>';
+                $html .= '<td><a href="#" class="btn_editar btn btn-outline-success btn-sm" title="Editar"
+                                       data-bs-toggle="modal" data-bs-target="#md_editar_activo" data-idact="' . $act->id_activo . '">
+                                        <i class="fas fa-pen-square"></i>
+                                    </a></td>';
+                $html .= '<td><a href="#" data-id="' . $act->id_activo . '" class="btn-desactivar-activo btn btn-outline-danger btn-sm" title="Desactivar"><i class="fas fa-trash-alt"></i></a></td>';
                 $html .= '</tr>';
             }
             $html .= '</table>';
         } else {
             $html = '<div class="alert alert-danger alert-dismissible fade show" role="alert">No existen activos que coincidan con el filtro.</div>';
+        }
+        
+        echo $html;
+    }
+
+    public function FiltrarActivosDesactivados($valor) {
+        $cn = $this->Conectar();
+        $sql = "call sp_filtrar_activos_desactivados(:valor)"; // SP para listar activos en baja
+        $snt = $cn->prepare($sql);
+        $snt->bindParam(":valor", $valor, PDO::PARAM_STR, 100); 
+        $snt->execute();
+        $arr_activos = $snt->fetchAll();
+        $cn = null;
+
+        // Generación de la tabla HTML
+        $html = '';
+        if (count($arr_activos) > 0) {
+            $html .= '<table class="table table-hover table-sm table-secondary table-striped">';
+            $html .= '<tr class="table-dark"><th>N°</th><th>ID</th><th>Categoría</th><th>Serial</th><th>Marca</th><th>Modelo</th><th>Estado</th><th>Acción</th></tr>';
+            $i = 0;
+            foreach ($arr_activos as $act) {
+                $i++;
+                $html .= '<tr class="reg_activo">';
+                $html .= '<td>' . $i . '</td>';
+                $html .= '<td class="codact">' . $act->id_activo . '</td>';
+                $html .= '<td>' . ($act->nombre_categoria ?? 'Sin Categoría') . '</td>';
+                $html .= '<td class="serialact">' . $act->serial_number . '</td>';
+                $html .= '<td>' . $act->marca . '</td>';
+                $html .= '<td>' . $act->modelo . '</td>';
+                $html .= '<td>' . $act->estado . '</td>';
+                
+                // Boton de reactivar
+                $html .= '<td><a href="#" data-id="' . $act->id_activo . '" class="btn-activar-activo btn btn-outline-success btn-sm"><i class="fas fa-check-circle"></i> Reactivar</a></td>';
+                $html .= '</tr>';
+            }
+            $html .= '</table>';
+        } else {
+            $html = '<div class="alert alert-info alert-dismissible fade show" role="alert">No existen activos en baja que coincidan con el filtro.</div>';
         }
         
         echo $html;

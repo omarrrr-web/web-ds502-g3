@@ -14,11 +14,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 require_once '../pages/model/conexion.php';
 require_once 'controllers/RolController.php';
 require_once 'controllers/EmpleadoController.php';
+require_once 'controllers/ActivoController.php';
 
 // 3. Mapeo de rutas a controladores
 $controller_map = [
     'roles' => 'RolController',
-    'empleados' => 'EmpleadoController'
+    'empleados' => 'EmpleadoController',
+    'activos' => 'ActivoController'
 ];
 
 // 4. Obtener y validar la tabla/recurso

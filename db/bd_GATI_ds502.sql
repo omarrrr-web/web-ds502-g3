@@ -1,6 +1,10 @@
 CREATE DATABASE IF NOT EXISTS bd_GATI_ds502;
 USE bd_GATI_ds502;
 
+-- =================================================================================
+-- ESTRUCTURA DE TABLAS
+-- =================================================================================
+
 CREATE TABLE IF NOT EXISTS `roles` (
   `id_rol` INT AUTO_INCREMENT PRIMARY KEY,
   `nombre_rol` VARCHAR(50) NOT NULL UNIQUE
@@ -30,24 +34,24 @@ CREATE TABLE IF NOT EXISTS `empleado_rol` (
 
 CREATE TABLE IF NOT EXISTS `activos` (
   `id_activo` INT AUTO_INCREMENT PRIMARY KEY,
-  `id_categoria` INT NOT NULL,
+  `id_categoria` INT NULL,
   `serial_number` VARCHAR(255) NOT NULL UNIQUE,
   `marca` VARCHAR(100) NULL,
   `modelo` VARCHAR(100) NULL,
   `fecha_compra` DATE NULL,
   `precio` DECIMAL(10, 2) NULL,
   `estado` ENUM('En uso', 'Almacenado', 'Mantenimiento', 'Baja') DEFAULT 'Almacenado',
-  FOREIGN KEY (`id_categoria`) REFERENCES `categorias_activo` (`id_categoria`)
+  CONSTRAINT `fk_activos_categorias_set_null` FOREIGN KEY (`id_categoria`) REFERENCES `categorias_activo` (`id_categoria`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS `licencias_software` (
   `id_licencia` INT AUTO_INCREMENT PRIMARY KEY,
-  `id_categoria` INT NOT NULL,
+  `id_categoria` INT NULL,
   `nombre_software` VARCHAR(150) NOT NULL,
   `clave_licencia` VARCHAR(255) NOT NULL,
   `fecha_expiracion` DATE NULL,
   `cantidad_usuarios` INT DEFAULT 1,
-  FOREIGN KEY (`id_categoria`) REFERENCES `categorias_activo` (`id_categoria`)
+  CONSTRAINT `fk_licencias_categorias_set_null` FOREIGN KEY (`id_categoria`) REFERENCES `categorias_activo` (`id_categoria`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS `asignaciones` (
@@ -71,6 +75,10 @@ CREATE TABLE IF NOT EXISTS `registros_mantenimiento` (
   FOREIGN KEY (`id_activo`) REFERENCES `activos` (`id_activo`),
   FOREIGN KEY (`realizado_por`) REFERENCES `empleados` (`id_empleado`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- =================================================================================
+-- INSERCIÓN DE DATOS DE EJEMPLO
+-- =================================================================================
 
 INSERT INTO `roles` (`id_rol`, `nombre_rol`) VALUES
 (1, 'Administrador'),
@@ -128,36 +136,46 @@ INSERT INTO `registros_mantenimiento` (`id_mantenimiento`, `id_activo`, `fecha_s
 (4, 4, '2024-04-20', 'Diagnóstico de batería hinchada (SN_APP_004). Se determina como BAJA.', 0.00, 2),
 (5, 6, '2025-10-31', 'Reemplazo de panel LCD dañado (SN_DELL_006).', 150.00, 2);
 
--- ========================
---    PROCEDIMIENTOS ROLES
--- ========================
+-- =================================================================================
+-- PROCEDIMIENTOS ALMACENADOS
+-- =================================================================================
+
+-- ---------------------------------------------------------------------------------
+-- TABLA: ROLES
+-- ---------------------------------------------------------------------------------
 DELIMITER $$
 
+-- [ROLES] Listar todos los roles
 CREATE PROCEDURE sp_listar_roles()
 BEGIN
     SELECT id_rol, nombre_rol FROM roles ORDER BY nombre_rol ASC;
 END $$
 
+-- [ROLES] Buscar un rol por su ID
 CREATE PROCEDURE sp_buscar_rol_por_id(IN p_id_rol INT)
 BEGIN
     SELECT id_rol, nombre_rol FROM roles WHERE id_rol = p_id_rol;
 END $$
 
+-- [ROLES] Registrar un nuevo rol
 CREATE PROCEDURE sp_registrar_rol(IN p_nombre_rol VARCHAR(100))
 BEGIN
     INSERT INTO roles(nombre_rol) VALUES(p_nombre_rol);
 END $$
 
+-- [ROLES] Editar el nombre de un rol
 CREATE PROCEDURE sp_editar_rol(IN p_id_rol INT, IN p_nombre_rol VARCHAR(50))
 BEGIN
     UPDATE roles SET nombre_rol = p_nombre_rol WHERE id_rol = p_id_rol;
 END $$
 
+-- [ROLES] Eliminar un rol (Borrado físico)
 CREATE PROCEDURE sp_eliminar_rol(IN p_id_rol INT)
 BEGIN
     DELETE FROM roles WHERE id_rol = p_id_rol;
 END $$
 
+-- [ROLES] Filtrar roles por un término de búsqueda
 CREATE PROCEDURE sp_filtrar_roles(IN p_termino VARCHAR(50))
 BEGIN
     SELECT id_rol, nombre_rol
@@ -166,9 +184,11 @@ BEGIN
     ORDER BY nombre_rol ASC;
 END $$
 
--- ==========================
---    PROCEDIMIENTOS EMPLEADOS
--- ==========================
+-- ---------------------------------------------------------------------------------
+-- TABLA: EMPLEADOS
+-- ---------------------------------------------------------------------------------
+
+-- [EMPLEADOS] Listar todos los empleados activos
 CREATE PROCEDURE sp_listar_empleados()
 BEGIN
     SELECT
@@ -186,6 +206,7 @@ BEGIN
     ORDER BY e.apellido, e.nombre;
 END $$
 
+-- [EMPLEADOS] Buscar un empleado por su ID
 CREATE PROCEDURE sp_buscar_empleado_por_id(IN p_id_empleado INT)
 BEGIN
     SELECT
@@ -203,6 +224,7 @@ BEGIN
     WHERE e.id_empleado = p_id_empleado;
 END $$
 
+-- [EMPLEADOS] Registrar un nuevo empleado y asignarle un rol
 CREATE PROCEDURE sp_registrar_empleado(
     IN p_nombre VARCHAR(100),
     IN p_apellido VARCHAR(100),
@@ -221,6 +243,7 @@ BEGIN
     COMMIT;
 END $$
 
+-- [EMPLEADOS] Editar los datos de un empleado y su rol
 CREATE PROCEDURE sp_editar_empleado(
     IN p_id_empleado INT,
     IN p_nombre VARCHAR(100),
@@ -238,16 +261,19 @@ BEGIN
     VALUES(p_id_empleado, p_id_rol);
 END $$
 
+-- [EMPLEADOS] Desactivar un empleado (Borrado lógico)
 CREATE PROCEDURE sp_desactivar_empleado(IN p_id_empleado INT)
 BEGIN
     UPDATE empleados SET activo = 0 WHERE id_empleado = p_id_empleado;
 END $$
 
+-- [EMPLEADOS] Activar un empleado
 CREATE PROCEDURE sp_activar_empleado(IN p_id_empleado INT)
 BEGIN
     UPDATE empleados SET activo = 1 WHERE id_empleado = p_id_empleado;
 END $$
 
+-- [EMPLEADOS] Listar empleados inactivos
 CREATE PROCEDURE sp_listar_empleados_inactivos()
 BEGIN
     SELECT
@@ -264,6 +290,7 @@ BEGIN
     ORDER BY e.apellido, e.nombre;
 END $$
 
+-- [EMPLEADOS] Filtrar empleados activos por un término de búsqueda
 CREATE PROCEDURE sp_filtrar_empleados(IN p_termino VARCHAR(255))
 BEGIN
     SELECT
@@ -284,9 +311,11 @@ BEGIN
     ORDER BY e.apellido, e.nombre;
 END $$
 
--- ===========================
---    PROCEDIMIENTOS CATEGORÍA
--- ===========================
+-- ---------------------------------------------------------------------------------
+-- TABLA: CATEGORIAS_ACTIVO
+-- ---------------------------------------------------------------------------------
+
+-- [CATEGORIAS] Listar todas las categorías de activos
 CREATE PROCEDURE sp_listar_categorias()
 BEGIN
     SELECT id_categoria, nombre_categoria
@@ -294,6 +323,7 @@ BEGIN
     ORDER BY nombre_categoria ASC;
 END $$
 
+-- [CATEGORIAS] Buscar una categoría por su ID
 CREATE PROCEDURE sp_buscar_categoria_por_id(IN p_id_categoria INT)
 BEGIN
     SELECT id_categoria, nombre_categoria
@@ -301,6 +331,7 @@ BEGIN
     WHERE id_categoria = p_id_categoria;
 END $$
 
+-- [CATEGORIAS] Filtrar categorías por un término de búsqueda
 CREATE PROCEDURE sp_filtrar_categorias(IN p_termino VARCHAR(100))
 BEGIN
     SELECT id_categoria, nombre_categoria
@@ -309,22 +340,26 @@ BEGIN
     ORDER BY nombre_categoria ASC;
 END $$
 
+-- [CATEGORIAS] Editar el nombre de una categoría
 CREATE PROCEDURE sp_editar_categoria(IN p_id_categoria INT, IN p_nombre_categoria VARCHAR(100))
 BEGIN
     UPDATE categorias_activo SET nombre_categoria = p_nombre_categoria WHERE id_categoria = p_id_categoria;
 END $$
 
+-- [CATEGORIAS] Registrar una nueva categoría
 CREATE PROCEDURE sp_registrar_categoria(IN p_nombre VARCHAR(100))
 BEGIN
     INSERT INTO categorias_activo(nombre_categoria)
     VALUES(p_nombre);
 END $$
 
+-- [CATEGORIAS] Editar el nombre de una categoría (duplicado, se mantiene por compatibilidad)
 CREATE PROCEDURE sp_editar_categorias_activo(IN p_id_categoria INT, IN p_nombre_categoria VARCHAR(100))
 BEGIN
     UPDATE categorias_activo SET nombre_categoria = p_nombre_categoria WHERE id_categoria = p_id_categoria;
 END $$
 
+-- [CATEGORIAS] Filtrar categorías por nombre (duplicado, se mantiene por compatibilidad)
 CREATE PROCEDURE sp_filtrar_categorias_por_nombre(IN nom_categoria VARCHAR(100))
 BEGIN
     SELECT c.id_categoria, c.nombre_categoria
@@ -332,41 +367,47 @@ BEGIN
     WHERE c.nombre_categoria LIKE CONCAT('%', nom_categoria, '%');
 END $$
 
+-- [CATEGORIAS] Eliminar una categoría (Borrado físico)
 CREATE PROCEDURE sp_borrar_categoria(IN p_id INT)
 BEGIN
     DELETE FROM categorias_activo WHERE id_categoria = p_id;
 END $$
 
--- =========================
---    PROCEDIMIENTOS ACTIVOS
--- =========================
+-- ---------------------------------------------------------------------------------
+-- TABLA: ACTIVOS
+-- ---------------------------------------------------------------------------------
+
+-- [ACTIVOS] Listar todos los activos (sin filtrar por estado)
 CREATE PROCEDURE sp_listar_activos()
 BEGIN
     SELECT a.*, c.nombre_categoria
     FROM activos a
-    JOIN categorias_activo c ON a.id_categoria = c.id_categoria
+    LEFT JOIN categorias_activo c ON a.id_categoria = c.id_categoria
     ORDER BY a.id_activo;
 END $$
 
+-- [ACTIVOS] Buscar un activo por su ID
 CREATE PROCEDURE sp_buscar_activo_por_id(IN p_id_activo INT)
 BEGIN
     SELECT a.*, c.nombre_categoria
     FROM activos a
-    JOIN categorias_activo c ON a.id_categoria = c.id_categoria
+    LEFT JOIN categorias_activo c ON a.id_categoria = c.id_categoria
     WHERE a.id_activo = p_id_activo;
 END $$
 
+-- [ACTIVOS] Filtrar activos por un término (sin filtrar por estado)
 CREATE PROCEDURE sp_filtrar_activos(IN p_termino VARCHAR(255))
 BEGIN
     SELECT a.*, c.nombre_categoria
     FROM activos a
-    JOIN categorias_activo c ON a.id_categoria = c.id_categoria
+    LEFT JOIN categorias_activo c ON a.id_categoria = c.id_categoria
     WHERE a.serial_number LIKE CONCAT('%', p_termino, '%')
        OR a.marca LIKE CONCAT('%', p_termino, '%')
        OR a.modelo LIKE CONCAT('%', p_termino, '%')
     ORDER BY a.id_activo;
 END $$
 
+-- [ACTIVOS] Registrar un nuevo activo
 CREATE PROCEDURE sp_registrar_activo(
     IN p_id_categoria INT,
     IN p_serial_number VARCHAR(255),
@@ -377,26 +418,11 @@ CREATE PROCEDURE sp_registrar_activo(
     IN p_estado ENUM('En uso', 'Almacenado', 'Mantenimiento', 'Baja')
 )
 BEGIN
-    INSERT INTO activos (
-        id_categoria,
-        serial_number,
-        marca,
-        modelo,
-        fecha_compra,
-        precio,
-        estado
-    )
-    VALUES (
-        p_id_categoria,
-        p_serial_number,
-        p_marca,
-        p_modelo,
-        p_fecha_compra,
-        p_precio,
-        p_estado
-    );
+    INSERT INTO activos (id_categoria, serial_number, marca, modelo, fecha_compra, precio, estado)
+    VALUES (p_id_categoria, p_serial_number, p_marca, p_modelo, p_fecha_compra, p_precio, p_estado);
 END $$
 
+-- [ACTIVOS] Editar los datos de un activo
 CREATE PROCEDURE sp_editar_activo(
     IN p_id_activo INT,
     IN p_id_categoria INT,
@@ -420,39 +446,99 @@ BEGIN
     WHERE id_activo = p_id_activo;
 END $$
 
-CREATE PROCEDURE sp_borrar_activo(IN p_id INT)
+-- [ACTIVOS] Dar de baja un activo (Borrado lógico)
+CREATE PROCEDURE sp_baja_activo(IN p_id_activo INT)
 BEGIN
-    DELETE FROM activos WHERE id_activo = p_id;
+    UPDATE activos
+    SET estado = 'Baja'
+    WHERE id_activo = p_id_activo;
 END $$
 
--- ==============================
---    PROCEDIMIENTOS LICENCIAS
--- ==============================
+-- [ACTIVOS] Reactivar un activo (lo pone en estado 'Almacenado')
+CREATE PROCEDURE sp_alta_activo(IN p_id_activo INT)
+BEGIN
+    UPDATE activos
+    SET estado = 'Almacenado'
+    WHERE id_activo = p_id_activo;
+END $$
+
+-- [ACTIVOS] Listar solo activos que NO están de baja
+CREATE PROCEDURE sp_listar_activos_activos()
+BEGIN
+    SELECT a.*, c.nombre_categoria
+    FROM activos a
+    LEFT JOIN categorias_activo c ON a.id_categoria = c.id_categoria
+    WHERE a.estado <> 'Baja'
+    ORDER BY a.id_activo;
+END $$
+
+-- [ACTIVOS] Filtrar solo activos que NO están de baja
+CREATE PROCEDURE sp_filtrar_activos_activos(IN p_valor VARCHAR(100))
+BEGIN
+    SELECT a.*, c.nombre_categoria
+    FROM activos a
+    LEFT JOIN categorias_activo c ON a.id_categoria = c.id_categoria
+    WHERE 
+        a.estado <> 'Baja' AND 
+        (
+            a.serial_number LIKE CONCAT('%', p_valor, '%') OR
+            a.marca LIKE CONCAT('%', p_valor, '%') OR
+            a.modelo LIKE CONCAT('%', p_valor, '%') OR
+            c.nombre_categoria LIKE CONCAT('%', p_valor, '%')
+        )
+    ORDER BY a.id_activo;
+END $$
+
+-- [ACTIVOS] Filtrar solo activos que SÍ están de baja
+CREATE PROCEDURE sp_filtrar_activos_desactivados(IN p_valor VARCHAR(100))
+BEGIN
+    SELECT a.*, c.nombre_categoria
+    FROM activos a
+    LEFT JOIN categorias_activo c ON a.id_categoria = c.id_categoria
+    WHERE 
+        a.estado = 'Baja' AND 
+        (
+            a.serial_number LIKE CONCAT('%', p_valor, '%') OR
+            a.marca LIKE CONCAT('%', p_valor, '%') OR
+            a.modelo LIKE CONCAT('%', p_valor, '%') OR
+            c.nombre_categoria LIKE CONCAT('%', p_valor, '%')
+        )
+    ORDER BY a.id_activo;
+END $$
+
+-- ---------------------------------------------------------------------------------
+-- TABLA: LICENCIAS_SOFTWARE
+-- ---------------------------------------------------------------------------------
+
+-- [LICENCIAS] Listar todas las licencias
 CREATE PROCEDURE sp_listar_licencias()
 BEGIN
     SELECT l.*, c.nombre_categoria
     FROM licencias_software l
-    JOIN categorias_activo c ON l.id_categoria = c.id_categoria
+    LEFT JOIN categorias_activo c ON l.id_categoria = c.id_categoria
     ORDER BY l.id_licencia;
 END $$
 
+-- [LICENCIAS] Buscar una licencia por su ID
 CREATE PROCEDURE sp_buscar_licencia_por_id(IN p_id_licencia INT)
 BEGIN
     SELECT l.*, c.nombre_categoria
     FROM licencias_software l
-    JOIN categorias_activo c ON l.id_categoria = c.id_categoria
+    LEFT JOIN categorias_activo c ON l.id_categoria = c.id_categoria
     WHERE l.id_licencia = p_id_licencia;
 END $$
 
+-- [LICENCIAS] Filtrar licencias por un término de búsqueda
 CREATE PROCEDURE sp_filtrar_licencias(IN p_termino VARCHAR(150))
 BEGIN
     SELECT l.*, c.nombre_categoria
     FROM licencias_software l
-    JOIN categorias_activo c ON l.id_categoria = c.id_categoria
+    LEFT JOIN categorias_activo c ON l.id_categoria = c.id_categoria
     WHERE l.nombre_software LIKE CONCAT('%', p_termino, '%')
     ORDER BY l.id_licencia;
 END $$
 
+-- [LICENCIAS] Registrar una nueva licencia
 CREATE PROCEDURE sp_registrar_licencia(
     IN p_id_categoria INT,
     IN p_nombre_software VARCHAR(150),
@@ -461,22 +547,11 @@ CREATE PROCEDURE sp_registrar_licencia(
     IN p_cantidad_usuarios INT
 )
 BEGIN
-    INSERT INTO licencias_software (
-        id_categoria,
-        nombre_software,
-        clave_licencia,
-        fecha_expiracion,
-        cantidad_usuarios
-    )
-    VALUES (
-        p_id_categoria,
-        p_nombre_software,
-        p_clave_licencia,
-        p_fecha_expiracion,
-        p_cantidad_usuarios
-    );
+    INSERT INTO licencias_software (id_categoria, nombre_software, clave_licencia, fecha_expiracion, cantidad_usuarios)
+    VALUES (p_id_categoria, p_nombre_software, p_clave_licencia, p_fecha_expiracion, p_cantidad_usuarios);
 END $$
 
+-- [LICENCIAS] Editar los datos de una licencia
 CREATE PROCEDURE sp_editar_licencia(
     IN p_id_licencia INT,
     IN p_id_categoria INT,
@@ -496,9 +571,127 @@ BEGIN
     WHERE id_licencia = p_id_licencia;
 END $$
 
+-- [LICENCIAS] Eliminar una licencia (Borrado físico)
 CREATE PROCEDURE sp_borrar_licencia(IN p_id INT)
 BEGIN
     DELETE FROM licencias_software WHERE id_licencia = p_id;
 END $$
 
 DELIMITER ;
+
+
+--ASignaciones 
+
+DELIMITER $$
+CREATE PROCEDURE sp_listar_asignaciones()
+BEGIN
+    SELECT a.id_asignacion,
+           e.nombre AS empleado_nombre,
+           ac.serial_number AS activo_nombre,
+           a.fecha_asignacion,
+           a.fecha_devolucion,
+           a.notas
+    FROM asignaciones a
+    INNER JOIN empleados e ON a.id_empleado = e.id_empleado
+    INNER JOIN activos ac ON a.id_activo = ac.id_activo
+    ORDER BY a.id_asignacion DESC;
+END$$
+DELIMITER ;
+
+
+DELIMITER $$
+CREATE PROCEDURE sp_buscar_asignacion_por_id(IN p_id INT)
+BEGIN
+    SELECT 
+        a.id_asignacion,
+        a.id_activo,
+        a.id_empleado,
+        a.fecha_asignacion,
+        a.fecha_devolucion,
+        a.notas,
+        CONCAT(e.nombre, ' ', e.apellido) AS nombre_empleado,
+        -- Construimos un "nombre" legible del activo: Marca Modelo (Serial)
+        CONCAT(IFNULL(ac.marca,''), ' ', IFNULL(ac.modelo,''), ' (', IFNULL(ac.serial_number,''), ')') AS nombre_activo
+    FROM asignaciones a
+    LEFT JOIN empleados e ON a.id_empleado = e.id_empleado
+    LEFT JOIN activos ac   ON a.id_activo   = ac.id_activo
+    WHERE a.id_asignacion = p_id;
+END$$
+DELIMITER ;
+
+
+
+DELIMITER $$
+CREATE PROCEDURE sp_registrar_asignacion(
+    IN p_id_empleado INT,
+    IN p_id_activo INT,
+    IN p_fecha_devolucion DATETIME,
+    IN p_notas TEXT
+)
+BEGIN
+    INSERT INTO asignaciones(id_empleado,id_activo,fecha_devolucion,notas)
+    VALUES(p_id_empleado,p_id_activo,p_fecha_devolucion,p_notas);
+
+    UPDATE activos SET estado='En uso'
+    WHERE id_activo = p_id_activo;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE PROCEDURE sp_editar_asignacion(
+    IN p_id_asignacion INT,
+    IN p_id_empleado INT,
+    IN p_id_activo INT,
+    IN p_fecha_asignacion DATETIME,
+    IN p_fecha_devolucion DATETIME,
+    IN p_notas TEXT
+)
+BEGIN
+    -- Actualizar la asignación sin cambios adicionales de estado de activo
+    UPDATE asignaciones
+    SET id_empleado = p_id_empleado,
+        id_activo = p_id_activo,
+        fecha_asignacion = p_fecha_asignacion,
+        fecha_devolucion = p_fecha_devolucion,
+        notas = p_notas
+    WHERE id_asignacion = p_id_asignacion;
+END$$
+
+DELIMITER ;
+
+
+DELIMITER $$
+CREATE PROCEDURE sp_borrar_asignacion(IN p_id INT)
+BEGIN
+    DECLARE idA INT;
+
+    SELECT id_activo INTO idA
+    FROM asignaciones
+    WHERE id_asignacion = p_id;
+
+    DELETE FROM asignaciones WHERE id_asignacion = p_id;
+
+    UPDATE activos SET estado='Almacenado'
+    WHERE id_activo = idA;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE sp_filtrar_asignaciones(IN p_filtro VARCHAR(100))
+BEGIN
+    SELECT a.id_asignacion,
+           CONCAT(e.nombre,' ',e.apellido) AS empleado_nombre,
+           ac.serial_number AS activo_nombre,
+           a.fecha_devolucion,
+           a.notas
+    FROM asignaciones a
+    INNER JOIN empleados e ON a.id_empleado = e.id_empleado
+    INNER JOIN activos ac ON a.id_activo = ac.id_activo
+    WHERE e.nombre LIKE CONCAT(p_filtro,'%')
+       OR e.apellido LIKE CONCAT(p_filtro,'%')
+       OR ac.serial_number LIKE CONCAT(p_filtro,'%')
+    ORDER BY a.id_asignacion DESC;
+END$$
+DELIMITER ;
+

@@ -6,16 +6,20 @@ include "../template/loadclass.php";
 $crudlicencia = new CRUDLicencia();
 
 // 2. Verificar si se recibió el ID de la licencia por URL (GET)
-if (isset($_GET["id_lic"])) {
+if (isset($_GET["idlic"])) {
     
     // Capturar la variable de la Licencia
-    $id_licencia = $_GET["id_lic"];
+    $id_licencia = $_GET["idlic"];
     
-    // 3. Llamar al método del Modelo: BorrarLicencia
-    $crudlicencia->BorrarLicencia($id_licencia);
+    // 3. Llamar al método del Modelo y capturar el resultado
+    $resultado = $crudlicencia->BorrarLicencia($id_licencia);
     
-    // 4. Redirigir al listado de licencias
-    header("location: ../view/licencias/listar_licencias.php");
+    // 4. Redirigir según el resultado
+    if ($resultado) {
+        header("location: ../view/licencias/listar_licencias.php?delete=exito");
+    } else {
+        header("location: ../view/licencias/listar_licencia.php?error=fk");
+    }
     exit();
 } else {
     // Si no se recibe el ID, redirigir al listado

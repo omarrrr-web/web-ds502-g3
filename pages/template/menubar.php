@@ -24,6 +24,9 @@
         <li class="nav-item">
           <a class="nav-link" href="<?=$route?>/licencias"><i class="fas fa-id-badge text-danger me-2"></i>Licencias</a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" href="<?=$route?>/asignacion"><i class="fas fa-tasks text-light me-2"></i>Asignaciones</a>
+        </li>
       </ul>
     </div>
   </div>
