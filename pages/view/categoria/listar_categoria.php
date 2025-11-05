@@ -46,7 +46,8 @@ $rs_cat = $crudcategoria->ListarCategoria();
                                 <td class="codcat"><?= $cat->id_categoria ?></td>
                                 <td class="nombrecat"><?= $cat->nombre_categoria ?></td>
                                 <td>
-                                    <a href="mostrar_categoria.php?idcat=<?= $cat->id_categoria ?>" class="btn btn-outline-info btn-sm" title="Mostrar">
+                                    <a href="#" class="btn_mostrar_categoria btn btn-outline-info btn-sm" title="Mostrar"
+                                       data-bs-toggle="modal" data-bs-target="#md_mostrar_cat" data-idcat="<?= $cat->id_categoria ?>">
                                         <i class="fas fa-eye"></i>
                                     </a>
                                 </td>
@@ -91,6 +92,25 @@ $rs_cat = $crudcategoria->ListarCategoria();
             <div class="modal-footer justify-content-center">
                 <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
                 <a href="#" class="btn_confirmar_borrar btn btn-outline-danger">Borrar</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="md_mostrar_cat" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-info"><i class="fas fa-info-circle"></i> Detalles de Categoría</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="categoria_details_content">
+                    <p>Cargando detalles de la categoría...</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
             </div>
         </div>
     </div>

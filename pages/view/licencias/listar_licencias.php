@@ -1,5 +1,4 @@
 <?php
-// Define la ruta DE DOS NIVELES (si funciona) o TRES (si es la que funciona para estáticos)
 $route = "../../.."; 
 include("../../template/loadclass.php");
 
@@ -29,15 +28,12 @@ include("../../template/menubar.php");
     <section>
         <article>
             <div class="row justify-content-center">
-                <div class="col-md-12">
+                <div class="col-md-9">
                     <div class="table-responsive">
                         <table class="table table-hover table-sm table-info table-striped">
                             <tr class="table-dark">
                                 <th>N°</th>
                                 <th>Software</th>
-                                <th>Clave Licencia</th>
-                                <th>Usuarios</th>
-                                <th>Expira</th>
                                 <th>Categoría</th>
                                 <th colspan="3">Acciones</th>
                             </tr>
@@ -52,18 +48,17 @@ include("../../template/menubar.php");
                             <tr class="reg_licencia <?= $row_class ?>">
                                 <td><?= $i ?></td>
                                 <td class="nombrelic"><?= $lic->nombre_software ?></td>
-                                <td><?= $lic->clave_licencia ?></td>
-                                <td class="cantidadlic"><?= $lic->cantidad_usuarios ?></td>
-                                <td class="expiralic"><?= ($fecha_exp ?? 'Permanente') ?></td>
                                 <td><?= $lic->nombre_categoria ?></td>
                                 
                                 <td>
-                                    <a href="mostrar_licencia.php?idlic=<?= $lic->id_licencia ?>" class="btn btn-outline-info btn-sm" title="Mostrar">
+                                    <a href="#" class="btn_mostrar_licencia btn btn-outline-info btn-sm" title="Mostrar"
+                                       data-bs-toggle="modal" data-bs-target="#md_mostrar_lic" data-idlic="<?= $lic->id_licencia ?>">
                                         <i class="fas fa-eye"></i>
                                     </a>
                                 </td>
                                 <td>
-                                    <a href="editar_licencia.php?idlic=<?= $lic->id_licencia ?>" class="btn_editar btn btn-outline-success btn-sm" title="Editar">
+                                    <a href="#" class="btn_editar_licencia btn btn-outline-success btn-sm" title="Editar"
+                                       data-bs-toggle="modal" data-bs-target="#md_editar_licencia" data-idlic="<?= $lic->id_licencia ?>">
                                         <i class="fas fa-pen-square"></i>
                                     </a>
                                 </td>
@@ -104,6 +99,43 @@ include("../../template/menubar.php");
             <div class="modal-footer justify-content-center">
                 <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
                 <a href="#" class="btn_confirmar_borrar btn btn-outline-danger">Borrar</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="md_mostrar_lic" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-info"><i class="fas fa-info-circle"></i> Detalles de Licencia</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Content will be loaded here via AJAX -->
+                <div id="licencia_details_content">
+                    <p>Cargando detalles de la licencia...</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Editar Licencia -->
+<div class="modal fade" id="md_editar_licencia" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-success"><i class="fas fa-edit"></i> Editar Licencia</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="editar_licencia_content">
+                    <!-- El formulario de edición se cargará aquí -->
+                </div>
             </div>
         </div>
     </div>

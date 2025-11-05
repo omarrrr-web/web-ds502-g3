@@ -56,12 +56,24 @@ class CRUDCategoria extends Conexion {
 
     // --- D (Delete) - Borrar ---
     public function BorrarCategoria($id_categoria) {
-        $cn = $this->Conectar();
-        $sql = "call sp_borrar_categoria(:id)"; // Tu SP
-        $snt = $cn->prepare($sql);
-        $snt->bindParam(":id", $id_categoria);
-        $snt->execute();
-        $cn = null;
+        try {
+            $cn = $this->Conectar();
+            $sql = "call sp_borrar_categoria(:id)"; // Tu SP
+            $snt = $cn->prepare($sql);
+            $snt->bindParam(":id", $id_categoria);
+            $snt->execute();
+            $cn = null;
+            return true; // Retorna true si tiene éxito
+        } catch (PDOException $e) {
+            // Código 23000: Violación de restricción de integridad (foreign key)
+            if ($e->getCode() == '23000') {
+                return false; // Retorna false si hay una violación de FK
+            } else {
+                // Para otros errores, puedes optar por relanzar la excepción
+                // o manejarla de otra manera.
+                throw $e;
+            }
+        }
     }
 
     // --- R (Read) - Filtrar (para AJAX) ---

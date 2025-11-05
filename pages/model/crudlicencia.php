@@ -32,6 +32,24 @@ class CRUDLicencia extends Conexion {
         echo json_encode($data);
     }
 
+    public function MostrarDetalleLicencia($id_licencia) {
+        $licencia = $this->BuscarLicenciaPorId($id_licencia);
+
+        if ($licencia) {
+            // Si se encontró la licencia, generar el HTML
+            $html = '<table class="table table-bordered">';
+            $html .= '<tr><th>ID Licencia</th><td>' . $licencia->id_licencia . '</td></tr>';
+            $html .= '<tr><th>Nombre Software</th><td>' . $licencia->nombre_software . '</td></tr>';
+            $html .= '<tr><th>Clave de Licencia</th><td>' . $licencia->clave_licencia . '</td></tr>';
+            $html .= '<tr><th>Fecha de Expiración</th><td>' . ($licencia->fecha_expiracion ? $licencia->fecha_expiracion : 'Permanente') . '</td></tr>';
+            $html .= '<tr><th>Cantidad de Usuarios</th><td>' . $licencia->cantidad_usuarios . '</td></tr>';
+            $html .= '</table>';
+            return $html;
+        } else {
+            return '<div class="alert alert-warning">No se encontró la licencia.</div>';
+        }
+    }
+
     // --- C (Create) - Registrar ---
     public function RegistrarLicencia(Licencia $licencia) { 
         $cn = $this->Conectar();

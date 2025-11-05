@@ -2,8 +2,7 @@
 <html lang="es">
     <?php
         $route = ".";
-        $title = "Aplicación Ventas - DS502 - Enriquez";
-
+        $title = "Aplicación Web - DS502 - G3";
         include("pages/template/header.php");
     ?>
 <body>

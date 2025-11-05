@@ -1,6 +1,4 @@
 <?php
-
-
   class CRUDEmpleado extends Conexion {
         public function ListarEmpleados(){        
             $cn = $this->Conectar();

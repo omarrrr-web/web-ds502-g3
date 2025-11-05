@@ -11,7 +11,6 @@ if (isset($_POST["txt_tipo"])) {
     $tipo = $_POST["txt_tipo"]; 
     
     // 2. Captura de datos comunes a Registro y Edición
-    // Nota: El modelo espera que el ID de categoría sea un entero (int), ya que en la BD es INT.
     $activo->id_categoria = (int)$_POST["cbo_id_cat"]; 
     $activo->serial_number = $_POST["txt_serial"];
     $activo->marca = $_POST["txt_marca"];
@@ -20,24 +19,36 @@ if (isset($_POST["txt_tipo"])) {
     $activo->precio = (float)$_POST["txt_precio"];
     $activo->estado = $_POST["cbo_estado"];
 
-    
+    $success = false;
     if ($tipo == "r") {
         // OPERACIÓN: REGISTRO (Create)
         $crudactivos->RegistrarActivo($activo);
+        $success = true;
     
     } elseif ($tipo == "e") {
         // OPERACIÓN: EDICIÓN (Update)
-        
-        // 3. Captura del ID que se va a editar
         $activo->id_activo = (int)$_POST["txt_id_act"];
-        
         $crudactivos->EditarActivo($activo);
+        $success = true;
     }
 
-    // 4. Redirigir al listado de activos después de la operación (ruta ajustada)
-    // Ruta: Sube de 'controller' (../) y entra a 'view/activos/'
-    header("location: ../view/activos/listar_activos.php");
-    exit();
+    // 4. Finalizar la operación
+    if (isset($_POST['is_ajax']) && $_POST['is_ajax'] == '1') {
+        header('Content-Type: application/json');
+        if ($success) {
+            echo json_encode(['success' => true, 'message' => 'Operación completada con éxito.']);
+        } else {
+            // Aunque en esta lógica simple siempre es exitoso, se prepara para el futuro
+            echo json_encode(['success' => false, 'message' => 'Ocurrió un error.']); 
+        }
+        exit();
+    } else {
+        // Redirección para formularios no-AJAX
+        $param = ($tipo == 'e') ? 'edicion=exito' : 'registro=exito';
+        header("location: ../view/activos/listar_activos.php?" . $param);
+        exit();
+    }
+
 } else {
     // Si se accede directamente al controlador sin datos POST, redirigir al listado
     header("location: ../view/activos/listar_activos.php");
