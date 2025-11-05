@@ -1,11 +1,9 @@
 'use strict';
 
 $(document).ready(function() {
-    // --- INICIALIZACIÓN DE MÓDULOS ---
     moduloRol.init();
     moduloEmpleado.init();
 
-    // --- LÓGICA GLOBAL (ej. notificaciones de éxito) ---
     const urlParams = new URLSearchParams(window.location.search);
     const registroExitoso = urlParams.get('registro') === 'exito';
     const edicionExitosa = urlParams.get('edicion') === 'exito';
