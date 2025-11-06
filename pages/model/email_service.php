@@ -4,7 +4,6 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
-// Cargar los archivos de la librería
 require 'C:/xampp/htdocs/web-ds502-g3/lib/PHPMailer/Exception.php';
 require 'C:/xampp/htdocs/web-ds502-g3/lib/PHPMailer/PHPMailer.php';
 require 'C:/xampp/htdocs/web-ds502-g3/lib/PHPMailer/SMTP.php';
@@ -22,8 +21,6 @@ function enviarEmail($destinatario, $asunto, $cuerpoHTML) {
     $mail = new PHPMailer(true);
 
     try {
-        // --- CONFIGURACIÓN DEL SERVIDOR SMTP ---
-        
         
         $mail->isSMTP();                                    
         $mail->Host       = 'smtp.gmail.com';           
@@ -32,18 +29,15 @@ function enviarEmail($destinatario, $asunto, $cuerpoHTML) {
         $mail->Password   = 'zcsy ndxy voag voxr';               
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;    
         $mail->Port       = 587;                              
-
-        // --- REMITENTE Y DESTINATARIOS ---
+        
         $mail->setFrom('no-reply@gati.com', 'Sistema GATI'); 
         $mail->addAddress($destinatario);                     
 
-        // --- CONTENIDO DEL CORREO ---
         $mail->isHTML(true);                                  
         $mail->Subject = $asunto;
         $mail->Body    = $cuerpoHTML;
         $mail->AltBody = strip_tags($cuerpoHTML); 
 
-        // Enviar el correo
         $mail->send();
         return true;
 
