@@ -6,10 +6,7 @@ class EmpleadoController extends BaseController {
     public function __construct($pdo) {
         parent::__construct($pdo, 'empleados', 'id_empleado');
     }
-
-
-
-    /** Sobrescribe el método delete para realizar un borrado lógico.   */
+    
     protected function delete($id) {
         $sql = "UPDATE {$this->table} SET activo = 0 WHERE {$this->primary_key} = ?";
         $stmt = $this->pdo->prepare($sql);
