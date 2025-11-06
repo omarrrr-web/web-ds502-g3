@@ -27,6 +27,9 @@
         <li class="nav-item">
           <a class="nav-link" href="<?=$route?>/asignacion"><i class="fas fa-tasks text-light me-2"></i>Asignaciones</a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" href="<?=$route?>/mantenimiento"><i class="fas fa-tools text-warning me-2"></i>Mantenimientos</a>
+        </li>
       </ul>
     </div>
   </div>

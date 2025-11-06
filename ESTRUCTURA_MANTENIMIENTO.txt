@@ -1,0 +1,189 @@
+================================================================================
+ESTRUCTURA DEL CRUD DE REGISTROS_MANTENIMIENTO
+================================================================================
+
+📁 web-ds502-g3/
+│
+├── 📁 db/
+│   ├── bd_GATI_ds502.sql ✅ (ACTUALIZADO - incluye SPs de mantenimiento)
+│   └── sp_registros_mantenimiento.sql ✅ (NUEVO - SPs independientes)
+│
+├── 📁 mantenimiento/ ✅ (NUEVO)
+│   └── index.php → Redirección a listar_mantenimientos.php
+│
+├── 📁 pages/
+│   │
+│   ├── 📁 model/
+│   │   ├── registros_mantenimiento.php ✅ (NUEVO - Clase modelo)
+│   │   └── crudregistrosmantenimiento.php ✅ (NUEVO - Clase CRUD)
+│   │
+│   ├── 📁 controller/
+│   │   ├── ctr_grabar_mantenimiento.php ✅ (NUEVO - Registrar/Editar)
+│   │   ├── ctr_filtrar_mantenimiento.php ✅ (NUEVO - Filtrar)
+│   │   ├── ctr_mostrar_mantenimiento.php ✅ (NUEVO - Mostrar detalles)
+│   │   ├── ctr_consultar_mantenimiento.php ✅ (NUEVO - Consultar JSON)
+│   │   └── ctr_get_form_mantenimiento.php ✅ (NUEVO - Form edición AJAX)
+│   │
+│   └── 📁 view/
+│       └── 📁 mantenimiento/ ✅ (NUEVO)
+│           ├── listar_mantenimientos.php → Lista completa
+│           ├── registrar_mantenimiento.php → Formulario registro
+│           ├── editar_mantenimiento.php → Formulario edición
+│           ├── mostrar_mantenimiento.php → Vista detalles
+│           ├── consultar_mantenimiento.php → Búsqueda por ID
+│           ├── filtrar_mantenimiento.php → Filtrado dinámico
+│           └── borrar_mantenimiento.php → Eliminación
+│
+├── INSTRUCCIONES_MANTENIMIENTO.md ✅ (NUEVO - Documentación)
+└── ESTRUCTURA_MANTENIMIENTO.txt ✅ (NUEVO - Este archivo)
+
+================================================================================
+PROCEDIMIENTOS ALMACENADOS CREADOS
+================================================================================
+
+1. sp_listar_mantenimientos()
+   └─ Lista todos los registros con información de activos y empleados
+
+2. sp_buscar_mantenimiento_por_id(p_id_mantenimiento)
+   └─ Busca un registro específico por ID
+
+3. sp_registrar_mantenimiento(p_id_activo, p_fecha_servicio, p_descripcion, 
+                               p_costo, p_realizado_por)
+   └─ Inserta un nuevo registro de mantenimiento
+
+4. sp_editar_mantenimiento(p_id_mantenimiento, p_id_activo, p_fecha_servicio, 
+                           p_descripcion, p_costo, p_realizado_por)
+   └─ Actualiza un registro existente
+
+5. sp_borrar_mantenimiento(p_id_mantenimiento)
+   └─ Elimina un registro (borrado físico)
+
+6. sp_filtrar_mantenimientos(p_termino)
+   └─ Filtra registros por serial, activo, empleado o descripción
+
+================================================================================
+FLUJO DE NAVEGACIÓN
+================================================================================
+
+INICIO
+  ↓
+/mantenimiento/ → index.php
+  ↓
+listar_mantenimientos.php
+  ├─→ [Registrar] → registrar_mantenimiento.php
+  │                    ↓
+  │                 ctr_grabar_mantenimiento.php (tipo=r)
+  │                    ↓
+  │                 sp_registrar_mantenimiento()
+  │                    ↓
+  │                 VOLVER A LISTA
+  │
+  ├─→ [Consultar] → consultar_mantenimiento.php
+  │                    ↓ (AJAX)
+  │                 ctr_consultar_mantenimiento.php
+  │                    ↓
+  │                 sp_buscar_mantenimiento_por_id()
+  │
+  ├─→ [Filtrar] → filtrar_mantenimiento.php
+  │                  ↓ (AJAX)
+  │               ctr_filtrar_mantenimiento.php
+  │                  ↓
+  │               sp_filtrar_mantenimientos()
+  │
+  ├─→ [Ver 👁] → mostrar_mantenimiento.php
+  │                 ↓
+  │              sp_buscar_mantenimiento_por_id()
+  │
+  ├─→ [Editar ✏] → editar_mantenimiento.php
+  │                   ↓
+  │                ctr_grabar_mantenimiento.php (tipo=e)
+  │                   ↓
+  │                sp_editar_mantenimiento()
+  │                   ↓
+  │                VOLVER A LISTA
+  │
+  └─→ [Borrar 🗑] → borrar_mantenimiento.php
+                      ↓
+                   sp_borrar_mantenimiento()
+                      ↓
+                   VOLVER A LISTA
+
+================================================================================
+CARACTERÍSTICAS IMPLEMENTADAS
+================================================================================
+
+✅ CRUD Completo (Create, Read, Update, Delete)
+✅ Listado con tabla Bootstrap
+✅ Formularios de registro y edición
+✅ Vista de detalles completa
+✅ Búsqueda por ID con AJAX
+✅ Filtrado dinámico con AJAX
+✅ Modales de confirmación para borrado
+✅ Validación de formularios HTML5
+✅ Integración con tablas relacionadas (activos, empleados)
+✅ Selectores dinámicos para activos y empleados
+✅ Formato de moneda para costos
+✅ Ordenamiento por fecha descendente
+✅ Mensajes de éxito/error
+✅ Navegación intuitiva con botones
+✅ Diseño responsive con Bootstrap
+✅ Iconos Font Awesome
+
+================================================================================
+PATRÓN DE ARQUITECTURA SEGUIDO
+================================================================================
+
+MVC (Model-View-Controller) + Procedimientos Almacenados
+
+┌─────────────────────────────────────────────────────────────┐
+│                         VISTA (View)                         │
+│  pages/view/mantenimiento/*.php                             │
+│  - Interfaz de usuario con Bootstrap                        │
+│  - Formularios HTML                                         │
+│  - JavaScript/jQuery para AJAX                              │
+└────────────────┬────────────────────────────────────────────┘
+                 │
+                 ↓
+┌─────────────────────────────────────────────────────────────┐
+│                    CONTROLADOR (Controller)                  │
+│  pages/controller/ctr_*.php                                 │
+│  - Recibe peticiones HTTP/AJAX                              │
+│  - Valida datos                                             │
+│  - Invoca métodos del modelo                                │
+│  - Retorna respuestas (HTML/JSON)                           │
+└────────────────┬────────────────────────────────────────────┘
+                 │
+                 ↓
+┌─────────────────────────────────────────────────────────────┐
+│                       MODELO (Model)                         │
+│  pages/model/crudregistrosmantenimiento.php                 │
+│  - Lógica de negocio                                        │
+│  - Conexión a BD (extends Conexion)                        │
+│  - Ejecuta procedimientos almacenados                       │
+└────────────────┬────────────────────────────────────────────┘
+                 │
+                 ↓
+┌─────────────────────────────────────────────────────────────┐
+│                   BASE DE DATOS (Database)                   │
+│  MySQL - Procedimientos Almacenados                         │
+│  - sp_listar_mantenimientos()                               │
+│  - sp_registrar_mantenimiento()                             │
+│  - sp_editar_mantenimiento()                                │
+│  - sp_borrar_mantenimiento()                                │
+│  - sp_buscar_mantenimiento_por_id()                         │
+│  - sp_filtrar_mantenimientos()                              │
+└─────────────────────────────────────────────────────────────┘
+
+================================================================================
+COMPATIBILIDAD
+================================================================================
+
+✅ Compatible con estructura existente del proyecto
+✅ No modifica archivos de otras tablas
+✅ Reutiliza clases existentes (CRUDActivos, CRUDEmpleado)
+✅ Sigue convenciones de nombres del proyecto
+✅ Integrado con sistema de autoload
+✅ Usa Bootstrap y Font Awesome existentes
+✅ Compatible con jQuery incluido en el proyecto
+
+================================================================================
