@@ -18,19 +18,15 @@ require 'C:/xampp/htdocs/web-ds502-g3/lib/PHPMailer/SMTP.php';
  * @return bool Devuelve true si el correo se envió correctamente, false en caso contrario.
  */
 function enviarEmail($destinatario, $asunto, $cuerpoHTML) {
-    // Crear una instancia de PHPMailer
+    // Creaciom de una instancia de PHPMailer
     $mail = new PHPMailer(true);
 
     try {
-        // --- CONFIGURACIÓN DEL SERVIDOR SMTP ---
-        // Descomenta la siguiente línea para ver el log de depuración
-        // $mail->SMTPDebug = SMTP::DEBUG_SERVER;
-        
-        $mail->isSMTP();                                    // Usar SMTP
-        $mail->Host       = 'smtp.gmail.com';             // IMPORTANTE: Cambiar por tu servidor SMTP
+        $mail->isSMTP();                                    
+        $mail->Host       = 'smtp.gmail.com';            
         $mail->SMTPAuth   = true;                             // Habilitar autenticación SMTP
-        $mail->Username   = 'adansonsilva@gmail.com';       // IMPORTANTE: Tu usuario SMTP (tu correo)
-        $mail->Password   = 'zcsy ndxy voag voxr';                // IMPORTANTE: Tu contraseña SMTP o contraseña de aplicación
+        $mail->Username   = 'adansonsilva@gmail.com';       
+        $mail->Password   = 'zcsy ndxy voag voxr';                
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;    // Habilitar encriptación TLS
         $mail->Port       = 587;                              // Puerto TCP para TLS (o 465 para SSL)
 
@@ -42,15 +38,13 @@ function enviarEmail($destinatario, $asunto, $cuerpoHTML) {
         $mail->isHTML(true);                                  // Establecer formato de correo a HTML
         $mail->Subject = $asunto;
         $mail->Body    = $cuerpoHTML;
-        $mail->AltBody = strip_tags($cuerpoHTML); // Cuerpo alternativo en texto plano para clientes de correo no-HTML
+        $mail->AltBody = strip_tags($cuerpoHTML); 
 
-        // Enviar el correo
+        // Enviar 
         $mail->send();
         return true;
 
     } catch (Exception $e) {
-        // En un entorno de producción, deberías registrar este error en lugar de mostrarlo.
-        // echo "El mensaje no pudo ser enviado. Mailer Error: {$mail->ErrorInfo}";
         return false;
     }
 }
