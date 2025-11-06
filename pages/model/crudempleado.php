@@ -57,7 +57,7 @@
         public function EditarEmpleado($id_empleado, $nombre, $apellido, $email, $id_rol){
             try{
                 $cn = $this->Conectar();
-                // El SP de editar no modifica el estado `activo`, por lo que se pasa como 1 (o se podría añadir al SP)
+                
                 $sql = "call sp_editar_empleado(:id_empleado, :nombre, :apellido, :email, 1, :id_rol)";
                 $snt = $cn->prepare($sql);
                 $snt->bindParam(":id_empleado", $id_empleado, PDO::PARAM_INT);

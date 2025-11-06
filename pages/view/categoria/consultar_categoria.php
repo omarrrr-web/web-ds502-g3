@@ -43,8 +43,6 @@ include("../../template/menubar.php");
             <!-- Aquí se mostrarán los resultados -->
         </div>
     </section>
+    <?php include("../../template/footer.php"); ?>
 </div>
 
-<?php
-include("../../template/footer.php");
-?>

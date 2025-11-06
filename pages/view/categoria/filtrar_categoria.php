@@ -44,8 +44,5 @@ include("../../template/menubar.php");
         <div id="tabla_resultados">
             </div>
     </section>
+    <?php include("../../template/footer.php"); ?>
 </div>
-
-<?php
-include("../../template/footer.php");
-?>

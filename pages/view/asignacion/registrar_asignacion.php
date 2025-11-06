@@ -5,11 +5,11 @@ include("../../template/loadclass.php");
 include("../../template/header.php");
 include("../../template/menubar.php");
 
-// Instanciar clases si necesitas cargar datos (empleados, activos)
+
 $crudActivo = new CRUDActivos();
 $crudEmpleado = new CRUDEmpleado();
 
-// Obtener listas para los combos
+
 $activos = $crudActivo->ListarActivos();
 $empleados = $crudEmpleado->ListarEmpleados();
 ?>
@@ -92,8 +92,6 @@ $empleados = $crudEmpleado->ListarEmpleados();
             </div>
         </article>
     </section>
+    <?php include("../../template/footer.php"); ?>
 </div>
 
-<?php
-include("../../template/footer.php");
-?>

@@ -24,7 +24,7 @@ include("../../template/menubar.php");
     </header>
     
     <nav class="mb-3">
-        <a href="listar_licencia.php" class="btn btn-outline-secondary btn-sm">
+        <a href="listar_licencias.php" class="btn btn-outline-secondary btn-sm">
             <i class="fas fa-arrow-circle-left"></i> Regresar
         </a>
     </nav>
@@ -93,8 +93,6 @@ include("../../template/menubar.php");
             </div>
         </article>
     </section>
+    <?php include("../../template/footer.php"); ?>
 </div>
 
-<?php
-include("../../template/footer.php");
-?>

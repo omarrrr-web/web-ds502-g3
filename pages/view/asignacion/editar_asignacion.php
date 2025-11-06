@@ -98,7 +98,8 @@ if (!$asignacion_actual) {
             </div>
         </article>
     </section>
+    <?php include("../../template/footer.php"); ?>
 </div>
 
-<?php include("../../template/footer.php"); ?>
+
 </html>

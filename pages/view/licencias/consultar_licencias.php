@@ -49,8 +49,5 @@ include("../../template/menubar.php");
             </div>
         </article>
     </section>
+    <?php include("../../template/footer.php"); ?>
 </div>
-
-<?php
-include("../../template/footer.php");
-?>

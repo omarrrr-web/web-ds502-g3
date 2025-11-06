@@ -86,8 +86,8 @@ if (isset($_GET['idasig'])) {
             La asignación con código <b><?= $id_asignacion ?></b> no existe.
         </div>
     <?php endif; ?>
+    <?php include("../../template/footer.php"); ?>
 </div>
 
-<?php include("../../template/footer.php"); ?>
 </body>
 </html>

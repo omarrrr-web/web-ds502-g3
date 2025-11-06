@@ -26,11 +26,6 @@ if (isset($_GET['idcat'])) {
     // USAR EL MÉTODO CORRECTO: BuscarActivoPorId
     $activo = $crud_act->BuscarActivoPorId($id_activo);
     
-    // Para mostrar el nombre de la Categoría, necesitamos otra consulta (o usar el SP que lista completo)
-    // El SP de listar completo ya trae el nombre: sp_listar_activos. Si usamos BuscarActivoPorId
-    // necesitamos el CRUDCategoria. Para simplicidad, se muestra el ID de categoría. 
-    // Si tu SP de búsqueda devuelve también el nombre de la categoría, úsalo aquí.
-    
 }
 ?>
 

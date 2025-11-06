@@ -1,5 +1,5 @@
 <?php
-// Importar las clases de PHPMailer
+
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
@@ -23,34 +23,32 @@ function enviarEmail($destinatario, $asunto, $cuerpoHTML) {
 
     try {
         // --- CONFIGURACIÓN DEL SERVIDOR SMTP ---
-        // Descomenta la siguiente línea para ver el log de depuración
-        // $mail->SMTPDebug = SMTP::DEBUG_SERVER;
         
-        $mail->isSMTP();                                    // Usar SMTP
-        $mail->Host       = 'smtp.gmail.com';             // IMPORTANTE: Cambiar por tu servidor SMTP
-        $mail->SMTPAuth   = true;                             // Habilitar autenticación SMTP
-        $mail->Username   = 'adansonsilva@gmail.com';       // IMPORTANTE: Tu usuario SMTP (tu correo)
-        $mail->Password   = 'zcsy ndxy voag voxr';                // IMPORTANTE: Tu contraseña SMTP o contraseña de aplicación
-        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;    // Habilitar encriptación TLS
-        $mail->Port       = 587;                              // Puerto TCP para TLS (o 465 para SSL)
+        
+        $mail->isSMTP();                                    
+        $mail->Host       = 'smtp.gmail.com';           
+        $mail->SMTPAuth   = true;                           
+        $mail->Username   = 'adansonsilva@gmail.com';     
+        $mail->Password   = 'zcsy ndxy voag voxr';               
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;    
+        $mail->Port       = 587;                              
 
         // --- REMITENTE Y DESTINATARIOS ---
-        $mail->setFrom('no-reply@gati.com', 'Sistema GATI'); // Correo y nombre del remitente
-        $mail->addAddress($destinatario);                     // Añadir un destinatario
+        $mail->setFrom('no-reply@gati.com', 'Sistema GATI'); 
+        $mail->addAddress($destinatario);                     
 
         // --- CONTENIDO DEL CORREO ---
-        $mail->isHTML(true);                                  // Establecer formato de correo a HTML
+        $mail->isHTML(true);                                  
         $mail->Subject = $asunto;
         $mail->Body    = $cuerpoHTML;
-        $mail->AltBody = strip_tags($cuerpoHTML); // Cuerpo alternativo en texto plano para clientes de correo no-HTML
+        $mail->AltBody = strip_tags($cuerpoHTML); 
 
         // Enviar el correo
         $mail->send();
         return true;
 
     } catch (Exception $e) {
-        // En un entorno de producción, deberías registrar este error en lugar de mostrarlo.
-        // echo "El mensaje no pudo ser enviado. Mailer Error: {$mail->ErrorInfo}";
+        
         return false;
     }
 }

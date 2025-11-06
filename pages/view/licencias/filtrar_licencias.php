@@ -47,8 +47,6 @@ include("../../template/menubar.php");
             <div class="alert alert-info text-center">Ingrese un valor para iniciar la búsqueda.</div>
         </div>
     </section>
+    <?php include("../../template/footer.php"); ?>
 </div>
 
-<?php
-include("../../template/footer.php");
-?>

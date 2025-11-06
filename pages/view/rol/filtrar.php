@@ -43,9 +43,9 @@
                 </div>
             </article>
         </section>
+        <?php include("../../template/footer.php"); ?>
     </div>
 
-    <?php include("../../template/footer.php"); ?>
 </body>
 
 </html>
