@@ -122,32 +122,33 @@ class CRUDActivos extends Conexion {
         // Generación de la tabla HTML para devolver en la respuesta AJAX
         $html = '';
         if (count($arr_activos) > 0) {
-            $html .= '<table class="table table-hover table-sm table-warning table-striped">';
-            $html .= '<tr class="table-dark"><th>N°</th><th>ID</th><th>Categoría</th><th>Serial</th><th>Marca</th><th>Modelo</th><th>Estado</th><th colspan="3">Acciones</th></tr>';
+            $html .= '<div class="table-responsive">';
+            $html .= '<table class="table table-hover table-striped table-bordered">';
+            $html .= '<thead class="table-dark"><tr><th class="text-center">N°</th><th class="text-center">ID</th><th>Categoría</th><th>Serial</th><th>Marca</th><th>Modelo</th><th>Estado</th><th class="text-center">Acciones</th></tr></thead>';
+            $html .= '<tbody>';
             $i = 0;
             foreach ($arr_activos as $act) {
                 $i++;
-                $html .= '<tr class="reg_activo">';
-                $html .= '<td>' . $i . '</td>';
-                $html .= '<td class="codact">' . $act->id_activo . '</td>';
-                $html .= '<td>' . ($act->nombre_categoria ?? 'Sin Categoría') . '</td>'; // Muestra el nombre de la categoría o un texto alternativo
+                $html .= '<tr class="reg_activo align-middle">';
+                $html .= '<td class="text-center">' . $i . '</td>';
+                $html .= '<td class="text-center codact">' . $act->id_activo . '</td>';
+                $html .= '<td>' . ($act->nombre_categoria ?? 'Sin Categoría') . '</td>';
                 $html .= '<td class="serialact">' . $act->serial_number . '</td>';
                 $html .= '<td>' . $act->marca . '</td>';
                 $html .= '<td>' . $act->modelo . '</td>';
-                $html .= '<td>' . $act->estado . '</td>';
+                $html .= '<td><span class="badge bg-success">' . $act->estado . '</span></td>';
                 
                 // Botones de acción
-                $html .= '<td><button class="btn btn-outline-info btn-sm btn_mostrar" data-id="' . $act->id_activo . '" title="Mostrar"><i class="fas fa-eye"></i></button></td>';
-                $html .= '<td><a href="#" class="btn_editar btn btn-outline-success btn-sm" title="Editar"
-                                       data-bs-toggle="modal" data-bs-target="#md_editar_activo" data-idact="' . $act->id_activo . '">
-                                        <i class="fas fa-pen-square"></i>
-                                    </a></td>';
-                $html .= '<td><a href="#" data-id="' . $act->id_activo . '" class="btn-desactivar-activo btn btn-outline-danger btn-sm" title="Desactivar"><i class="fas fa-trash-alt"></i></a></td>';
+                $html .= '<td class="text-center">';
+                $html .= '<button class="btn btn-info btn-sm btn_mostrar" data-id="' . $act->id_activo . '" title="Mostrar"><i class="fas fa-eye"></i></button>';
+                $html .= '<a href="#" class="btn btn-success btn-sm" title="Editar" data-bs-toggle="modal" data-bs-target="#md_editar_activo" data-idact="' . $act->id_activo . '"><i class="fas fa-pen-square"></i></a>';
+                $html .= '<button type="button" data-id="' . $act->id_activo . '" class="btn btn-danger btn-sm btn-desactivar-activo" title="Desactivar"><i class="fas fa-trash-alt"></i></button>';
+                $html .= '</td>';
                 $html .= '</tr>';
             }
-            $html .= '</table>';
+            $html .= '</tbody></table></div>';
         } else {
-            $html = '<div class="alert alert-danger alert-dismissible fade show" role="alert">No existen activos que coincidan con el filtro.</div>';
+            $html = '<div class="alert alert-info">No existen activos que coincidan con el filtro.</div>';
         }
         
         echo $html;
@@ -165,27 +166,29 @@ class CRUDActivos extends Conexion {
         // Generación de la tabla HTML
         $html = '';
         if (count($arr_activos) > 0) {
-            $html .= '<table class="table table-hover table-sm table-secondary table-striped">';
-            $html .= '<tr class="table-dark"><th>N°</th><th>ID</th><th>Categoría</th><th>Serial</th><th>Marca</th><th>Modelo</th><th>Estado</th><th>Acción</th></tr>';
+            $html .= '<div class="table-responsive">';
+            $html .= '<table class="table table-hover table-striped table-bordered">';
+            $html .= '<thead class="table-dark"><tr><th class="text-center">N°</th><th class="text-center">ID</th><th>Categoría</th><th>Serial</th><th>Marca</th><th>Modelo</th><th>Estado</th><th class="text-center">Acción</th></tr></thead>';
+            $html .= '<tbody>';
             $i = 0;
             foreach ($arr_activos as $act) {
                 $i++;
-                $html .= '<tr class="reg_activo">';
-                $html .= '<td>' . $i . '</td>';
-                $html .= '<td class="codact">' . $act->id_activo . '</td>';
+                $html .= '<tr class="reg_activo align-middle">';
+                $html .= '<td class="text-center">' . $i . '</td>';
+                $html .= '<td class="text-center codact">' . $act->id_activo . '</td>';
                 $html .= '<td>' . ($act->nombre_categoria ?? 'Sin Categoría') . '</td>';
                 $html .= '<td class="serialact">' . $act->serial_number . '</td>';
                 $html .= '<td>' . $act->marca . '</td>';
                 $html .= '<td>' . $act->modelo . '</td>';
-                $html .= '<td>' . $act->estado . '</td>';
+                $html .= '<td><span class="badge bg-danger">' . $act->estado . '</span></td>';
                 
                 // Boton de reactivar
-                $html .= '<td><a href="#" data-id="' . $act->id_activo . '" class="btn-activar-activo btn btn-outline-success btn-sm"><i class="fas fa-check-circle"></i> Reactivar</a></td>';
+                $html .= '<td class="text-center"><button type="button" data-id="' . $act->id_activo . '" class="btn btn-success btn-sm btn-activar-activo"><i class="fas fa-check-circle me-1"></i> Reactivar</button></td>';
                 $html .= '</tr>';
             }
-            $html .= '</table>';
+            $html .= '</tbody></table></div>';
         } else {
-            $html = '<div class="alert alert-info alert-dismissible fade show" role="alert">No existen activos en baja que coincidan con el filtro.</div>';
+            $html = '<div class="alert alert-info">No existen activos en baja que coincidan con el filtro.</div>';
         }
         
         echo $html;

@@ -1,0 +1,120 @@
+/* Estilos Generales */
+body {
+    background-color: #f8f9fa; /* Un gris muy claro para el fondo */
+    color: #212529;
+}
+
+/* Estilos para las Tarjetas (Cards) */
+.card {
+    border: none; /* Quitar el borde por defecto */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05); /* Sombra sutil */
+    transition: all 0.3s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-5px); /* Efecto de elevación al pasar el mouse */
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+}
+
+.card-header {
+    background-color: #fff;
+    border-bottom: 1px solid #e9ecef;
+    font-weight: 600;
+}
+
+/* Estilos para la Tabla */
+.table-hover tbody tr:hover {
+    background-color: rgba(0, 123, 255, 0.05); /* Un azul muy suave al pasar el mouse */
+}
+
+/* Botones de Acción en Tablas */
+.table .btn {
+    margin-right: 5px;
+}
+
+/* Navbar Moderno */
+.navbar {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Sombra sutil para la navbar */
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.25rem;
+}
+
+.navbar-nav .nav-link {
+    color: rgba(255, 255, 255, 0.75); /* Color de texto por defecto */
+    transition: color 0.3s ease, background-color 0.3s ease; /* Transición suave */
+    padding: 0.5rem 1rem; /* Espaciado */
+    border-radius: 0.25rem; /* Bordes ligeramente redondeados */
+}
+
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link.active {
+    color: #fff; /* Color de texto blanco al pasar el mouse o activo */
+    background-color: rgba(255, 255, 255, 0.1); /* Fondo sutil al pasar el mouse o activo */
+}
+
+.navbar-nav .nav-link.active {
+    font-weight: 600; /* Texto más negrita para el activo */
+}
+
+/* Página Principal - Carrusel */
+.main-carousel {
+    max-width: 900px;
+}
+
+.main-carousel .carousel-item {
+    height: 450px; /* Altura fija para el carrusel */
+}
+
+.main-carousel .carousel-item img {
+    height: 100%;
+    object-fit: cover; /* Las imágenes cubrirán el espacio sin deformarse */
+    filter: brightness(0.8); /* Oscurecer ligeramente las imágenes para que el texto resalte */
+}
+
+.main-carousel .carousel-caption {
+    background-color: rgba(0, 0, 0, 0.5); /* Fondo semitransparente más oscuro */
+    border-radius: 0.5rem;
+    padding: 1rem;
+}
+
+/* Página Principal - Hero Section */
+.hero-section {
+    background: linear-gradient(45deg, #007bff, #0056b3);
+    color: white;
+    padding: 60px 20px;
+    text-align: center;
+    border-radius: 0.5rem;
+    margin-bottom: 30px;
+}
+
+.hero-section h1 {
+    font-weight: 700;
+}
+
+/* Página Principal - Tarjetas de Módulos */
+.module-card {
+    text-align: center;
+    padding: 20px;
+}
+
+.module-card .icon {
+    font-size: 48px; /* Iconos más grandes */
+    margin-bottom: 15px;
+    transition: transform 0.3s ease;
+}
+
+.module-card:hover .icon {
+    transform: scale(1.1); /* Agrandar el icono al pasar el mouse */
+}
+
+.module-card a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.module-card a:hover .card-title {
+    color: #007bff; /* Cambiar color del título al pasar el mouse */
+}

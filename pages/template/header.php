@@ -2,7 +2,9 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     
-    <link rel = "stylesheet" href = "<?=$route?>/css/bootstrap/css/bootstrap.css"/>
+    <link rel="stylesheet" href="<?=$route?>/css/bootstrap/css/bootstrap.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="<?=$route?>/css/style.css">
     <link rel = "stylesheet" href = "<?=$route?>/css/fontawesome/css/all.css"/>
 
     <script src = "<?=$route?>/js/jquery.js"></script>

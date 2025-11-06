@@ -21,21 +21,22 @@
             <div class="row">
                 <div class="col-md-12">
                     <div id="tabla_activos_inactivos">
-                        <!-- La tabla de activos inactivos se cargará aquí -->
+                        
                     </div>
                 </div>
             </div>
         </article>
     </section>
+    <?php include("../../template/footer.php"); ?>
 </div>
 
-<?php include("../../template/footer.php"); ?>
+
 
 <script>
-    // Función para cargar la tabla de activos inactivos
+    
     function cargarTablaInactivos() {
         $.ajax({
-            url: '../../controller/ctr_filtrar_activos_desactivados.php', // Nuevo controlador
+            url: '../../controller/ctr_filtrar_activos_desactivados.php', 
             type: 'POST',
             data: { valor: '' },
             success: function(response) {

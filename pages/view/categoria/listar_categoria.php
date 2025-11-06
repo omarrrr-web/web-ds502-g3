@@ -1,117 +1,135 @@
 <?php
 $route = "../../..";
 $title = "Listar Categorías";
-// Incluir el autoloader y los templates
 include("../../template/loadclass.php");
-include("../../template/header.php"); // header incluye el inicio de HTML y el head
-include("../../template/menubar.php"); // menubar incluye la navegación
+include("../../template/header.php");
+include("../../template/menubar.php");
 
-// Lógica PHP para obtener los datos
 $crudcategoria = new CRUDCategoria();
 $rs_cat = $crudcategoria->ListarCategoria();
 ?>
 
-<div class="container mt-3">
-    <header>
-        <h3 class="text-primary"><i class="fas fa-list-alt"></i> Lista de Categorías de Activo</h3>
-        <hr />
-    </header>
-
-    <nav class="mb-3">
-        <div class="btn-group" role="group">
-            <a href="registrar_categoria.php" class="btn btn-outline-primary"><i class="fas fa-plus-circle"></i> Registrar</a>
-            <a href="consultar_categoria.php" class="btn btn-outline-primary"><i class="fa fa-search"></i> Consultar</a>
-            <a href="filtrar_categoria.php" class="btn btn-outline-primary"><i class="fa fa-filter"></i> Filtrar</a>
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h3 class="text-primary mb-0"><i class="fas fa-tags me-2"></i> Lista de Categorías de Activo</h3>
         </div>
-    </nav>
+        <div class="card-body">
+            <nav class="mb-4">
+                <div class="btn-group" role="group">
+                    <a href="registrar_categoria.php" class="btn btn-outline-primary"><i class="fas fa-plus-circle me-1"></i> Registrar</a>
+                    <a href="consultar_categoria.php" class="btn btn-outline-info"><i class="fa fa-search me-1"></i> Consultar</a>
+                    <a href="filtrar_categoria.php" class="btn btn-outline-secondary"><i class="fa fa-filter me-1"></i> Filtrar</a>
+                </div>
+            </nav>
 
-    <section>
-        <article>
-            <div class="row justify-content-center">
-                <div class="col-md-8">
-                    <table class="table table-hover table-sm table-success table-striped">
-                        <tr class="table-primary">
-                            <th>N°</th>
-                            <th>ID Categoría</th>
+            <div class="table-responsive">
+                <table class="table table-hover table-striped table-bordered">
+                    <thead class="table-dark">
+                        <tr>
+                            <th class="text-center">N°</th>
+                            <th class="text-center">ID</th>
                             <th>Nombre Categoría</th>
-                            <th colspan="3">Acciones</th>
+                            <th class="text-center">Acciones</th>
                         </tr>
+                    </thead>
+                    <tbody>
                         <?php
-                        $i = 0;
-                        foreach ($rs_cat as $cat) {
-                            $i++;
+                        if (count($rs_cat) > 0) {
+                            $i = 0;
+                            foreach ($rs_cat as $cat) {
+                                $i++;
                         ?>
-                            <tr class="reg_categoria">
-                                <td><?= $i ?></td>
-                                <td class="codcat"><?= $cat->id_categoria ?></td>
-                                <td class="nombrecat"><?= $cat->nombre_categoria ?></td>
-                                <td>
-                                    <a href="#" class="btn_mostrar_categoria btn btn-outline-info btn-sm" title="Mostrar"
-                                       data-bs-toggle="modal" data-bs-target="#md_mostrar_cat" data-idcat="<?= $cat->id_categoria ?>">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-                                </td>
-                                <td>
-                                    <a href="#" class="btn_editar btn btn-outline-success btn-sm" title="Editar"
-                                       data-bs-toggle="modal" data-bs-target="#md_editar_cat" data-idcat="<?= $cat->id_categoria ?>">
-                                        <i class="fas fa-pen-square"></i>
-                                    </a>
-                                </td>
-                                <td>
-                                    <a href="#" data-bs-toggle="modal" data-bs-target="#md_borrar_cat"
-                                        data-id="<?= $cat->id_categoria ?>"
-                                        data-nombre="<?= $cat->nombre_categoria ?>"
-                                        class="btn_borrar btn btn-outline-danger btn-sm" title="Borrar">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </a>
-                                </td>
+                                <tr class="reg_categoria align-middle">
+                                    <td class="text-center"><?= $i ?></td>
+                                    <td class="text-center codcat"><?= $cat->id_categoria ?></td>
+                                    <td class="nombrecat"><?= $cat->nombre_categoria ?></td>
+                                    <td class="text-center">
+                                        <a href="#" class="btn btn-info btn-sm" title="Mostrar"
+                                           data-bs-toggle="modal" data-bs-target="#md_mostrar_cat" data-idcat="<?= $cat->id_categoria ?>">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="#" class="btn btn-success btn-sm" title="Editar"
+                                           data-bs-toggle="modal" data-bs-target="#md_editar_cat" data-idcat="<?= $cat->id_categoria ?>">
+                                            <i class="fas fa-pen-square"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-danger btn-sm btn_borrar" title="Borrar"
+                                                data-id="<?= $cat->id_categoria ?>" 
+                                                data-nombre="<?= $cat->nombre_categoria ?>">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                        <?php
+                            }
+                        } else {
+                        ?>
+                            <tr>
+                                <td colspan="4" class="text-center">No hay categorías registradas.</td>
                             </tr>
                         <?php
                         }
                         ?>
-                    </table>
-                </div>
+                    </tbody>
+                </table>
             </div>
-        </article>
-    </section>
+        </div>
+    </div>
+    <?php include("../../template/footer.php"); ?>
 </div>
 
-<div class="modal fade" id="md_borrar_cat" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+<!-- MODALES -->
+
+<!-- Modal Genérico para Notificaciones -->
+<div class="modal fade" id="modalGenerico" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title text-danger"><i class="fas fa-trash-alt"></i> Borrar Categoría</h5>
+            <div class="modal-header" id="modalGenericoHeader">
+                <h1 class="modal-title fs-5" id="modalGenericoTitle"></h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body text-center">
-                <h5>¿Seguro de borrar el registro?</h5>
-                <p>
-                    <span class="lbl_nombre_cat text-bold"></span>
-                    <span class="lbl_id_cat text-muted"></span>
-                </p>
+            <div class="modal-body" id="modalGenericoBody">
             </div>
-            <div class="modal-footer justify-content-center">
-                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
-                <button type="button" class="btn_confirmar_borrar btn btn-outline-danger">Borrar</button>
+            <div class="modal-footer" id="modalGenericoFooter">
             </div>
         </div>
     </div>
 </div>
 
+<!-- Modal para Borrar Categoría -->
+<div class="modal fade" id="md_borrar_cat" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title"><i class="fas fa-trash-alt me-2"></i> Borrar Categoría</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <p class="fs-5">¿Está seguro de que desea eliminar la categoría?</p>
+                <h4 class="lbl_nombre_cat text-primary"></h4>
+                <p class="lbl_id_cat text-muted"></p>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger btn_confirmar_borrar">Confirmar Borrado</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Mostrar Detalles -->
 <div class="modal fade" id="md_mostrar_cat" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title text-info"><i class="fas fa-info-circle"></i> Detalles de Categoría</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title"><i class="fas fa-info-circle me-2"></i> Detalles de Categoría</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <div id="categoria_details_content">
-                    <p>Cargando detalles de la categoría...</p>
-                </div>
+            <div class="modal-body" id="categoria_details_content">
+                <!-- Contenido se carga vía AJAX -->
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
             </div>
         </div>
     </div>
@@ -122,18 +140,13 @@ $rs_cat = $crudcategoria->ListarCategoria();
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header bg-success text-white">
-                <h5 class="modal-title"><i class="fas fa-edit"></i> Editar Categoría</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="modal-title"><i class="fas fa-edit me-2"></i> Editar Categoría</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <div id="editar_cat_content">
-                    <!-- El formulario de edición se cargará aquí -->
-                </div>
+            <div class="modal-body" id="editar_cat_content">
+                <!-- El formulario de edición se cargará aquí vía AJAX -->
             </div>
         </div>
     </div>
 </div>
 
-<?php
-include("../../template/footer.php");
-?>

@@ -1,11 +1,14 @@
-<nav class="navbar navbar-expand-lg" style="background-color:darkcyan;">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container-fluid">
-  <a class="nav-link active" aria-current="page" href="<?=$route?>"><i class="fas fa-home me-2"></i>Home</a>
+    <a class="navbar-brand" href="<?=$route?>"><i class="fas fa-shield-alt text-white"></i> GATI</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="<?=$route?>"><i class="fas fa-home me-2"></i>Home</a>
+        </li>
         <li class="nav-item">
           <a class="nav-link active" aria-current="page" href="https://www.senati.edu.pe"><i class="fas fa-graduation-cap text-light me-2"></i>SENATI</a>
         </li>

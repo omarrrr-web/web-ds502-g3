@@ -1,26 +1,21 @@
 'use strict';
 
-/**
- * ==================================================================================
- * INICIALIZACIÓN PRINCIPAL
- * Se ejecuta cuando el DOM está completamente cargado.
- * ==================================================================================
- */
 $(document).ready(function() {
-    // Inicializa los módulos principales de la aplicación
+    
     helpers.init();
     moduloActivo.init();
-    moduloAsignacion.init(); // <--- AÑADIDO
+    moduloAsignacion.init(); 
     moduloCategoria.init();
     moduloEmpleado.init();
     moduloLicencia.init();
     moduloRol.init();
+    moduloMantenimiento.init();
 });
 
 
 /**
  * ==================================================================================
- * HELPERS (Funciones de Ayuda Genéricas)
+ * HELPERS
  * Objeto con funciones reutilizables en toda la aplicación.
  * ==================================================================================
  */
@@ -152,9 +147,6 @@ const helpers = {
         }
     },
 
-    /**
-     * Limpia los parámetros de la URL sin recargar la página.
-     */
     limpiarUrl: function() {
         const cleanURL = `${window.location.protocol}//${window.location.host}${window.location.pathname}`;
         window.history.replaceState({ path: cleanURL }, '', cleanURL);
@@ -190,7 +182,13 @@ const helpers = {
  */
 const moduloActivo = {
     init: function() {
+        this.cargarTablaActivos(); // Carga la tabla al iniciar
         this.vincularEventos();
+    },
+
+    cargarTablaActivos: function() {
+        // Usa el helper para cargar la tabla de activos activos
+        helpers.cargarContenido('#tabla_activos', '../../controller/ctr_filtrar_activo.php', { valor: '' });
     },
 
     vincularEventos: function() {
@@ -235,7 +233,6 @@ const moduloActivo = {
                 });
         });
 
-        // Botones de la tabla de activos
         $(document).on('click', '.btn-desactivar-activo', function() { self.desactivarActivo($(this).data('id')); });
         $(document).on('click', '.btn-activar-activo', function() { self.activarActivo($(this).data('id')); });
     },
@@ -290,7 +287,7 @@ const moduloAsignacion = {
     },
 
     vincularEventos: function() {
-        // Maneja el modal de confirmación de borrado
+        
         $('#md_borrar_asig').on('show.bs.modal', function(event){
             let boton = event.relatedTarget;
             let idasig = $(boton).data('id');
@@ -298,7 +295,6 @@ const moduloAsignacion = {
             let modal = $(this);
             modal.find('.lbl_id_asig').text("ID: " + idasig);
             
-            // Usamos .one() para evitar múltiples eventos si el modal se abre y cierra varias veces
             modal.find('.btn_confirmar_borrar').one('click', function() {
                 window.location.href = "borrar_asignacion.php?idasig=" + idasig;
             });
@@ -613,6 +609,26 @@ const moduloRol = {
     }
 };
 
+/**
+ * ==================================================================================
+ * MÓDULO DE MANTENIMIENTO
+ * ==================================================================================
+ */
+const moduloMantenimiento = {
+    init: function() {
+        this.vincularEventos();
+    },
+
+    vincularEventos: function() {
+        // Capturar el ID cuando se abre el modal de borrar
+        $('#md_borrar_mant').on('show.bs.modal', function() {
+            const id = $(this).data('id');
+            $('.lbl_id_mant').text('ID: ' + id);
+            $('.btn_confirmar_borrar').attr('href', 'borrar_mantenimiento.php?idmant=' + id);
+        });
+    }
+};
+
 
 /**
  * ==================================================================================
@@ -644,7 +660,7 @@ $(function () {
         modal.find('.lbl_id_cat').text("(" + id_cat + ")");
         const delete_url = "../../controller/ctr_borrar_categoria.php?id_cat=" + id_cat;
         
-        // Asignar el evento de clic al botón de confirmación
+      
         modal.find('.btn_confirmar_borrar').one('click', function() {
             window.location.href = delete_url;
         });
@@ -687,20 +703,20 @@ $(function () {
                         html += '<tr><th>ID Categoría</th><td>' + response.id_categoria + '</td></tr>';
                         html += '<tr><th>Nombre Categoría</th><td>' + response.nombre_categoria + '</td></tr>';
                         html += '</table>';
-                        // Usar el helper para mostrar el modal
+                        
                         helpers.mostrarModal('Detalles de Categoría', html, 'info');
                     } else {
-                        // Usar el helper para mostrar un modal de advertencia
+                        
                         helpers.mostrarModal('Búsqueda sin Resultados', 'No se encontró ninguna categoría con el ID ' + id_cat + '.', 'warning');
                     }
                 },
                 error: function() {
-                    // Usar el helper para mostrar un modal de error
+                    
                     helpers.mostrarModal('Error', 'Error de comunicación al consultar el servidor.', 'danger');
                 }
             });
         } else {
-            // Usar el helper para mostrar un modal de información
+            
             helpers.mostrarModal('Información', 'Por favor, ingrese un ID de Categoría.', 'info');
         }
     });
@@ -802,20 +818,20 @@ $(function () {
                         html += '<tr><th>Precio (S/)</th><td>' + parseFloat(response.precio).toFixed(2) + '</td></tr>';
                         html += '<tr><th>Estado</th><td class="fw-bold text-danger">' + response.estado + '</td></tr>';
                         html += '</table></div>';
-                        // Usar el helper para mostrar el modal
+                        
                         helpers.mostrarModal('Detalles del Activo', html, 'info');
                     } else {
-                        // Usar el helper para mostrar un modal de advertencia
+                        
                         helpers.mostrarModal('Búsqueda sin Resultados', 'No se encontró ningún activo con el ID ' + id_act + '.', 'warning');
                     }
                 },
                 error: function() {
-                    // Usar el helper para mostrar un modal de error
+                    
                     helpers.mostrarModal('Error', 'Error de comunicación al consultar el servidor.', 'danger');
                 }
             });
         } else {
-            // Usar el helper para mostrar un modal de información
+        
             helpers.mostrarModal('Información', 'Por favor, ingrese un ID de Activo.', 'info');
         }
     });
